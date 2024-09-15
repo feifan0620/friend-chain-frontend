@@ -1,26 +1,44 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 defineOptions({
   name: 'LayoutIndex'
 })
 
-const active = ref('home')
+const value = ref('label_1')
+const list = ref([
+  { value: '/home', label: '首页', icon: 'home' },
+  { value: '/team', label: '队伍', icon: 'usergroup' },
+  { value: '/user', label: '我的', icon: 'user' }
+])
+const changeView = (changeValue: string) => {
+  router.push(changeValue)
+}
 </script>
 
 <template>
-  <van-nav-bar title="标题" left-arrow>
+  <t-navbar title="标题文字" :fixed="false" left-arrow class="custom-navbar">
     <template #right>
-      <van-icon name="search" size="20" />
+      <t-icon name="search" size="24px" />
     </template>
-  </van-nav-bar>
+  </t-navbar>
 
   <router-view />
 
-  <van-tabbar v-model="active">
-    <van-tabbar-item name="home" to="/home" icon="wap-home-o">首页</van-tabbar-item>
-    <van-tabbar-item name="team" to="/team" icon="friends-o">队伍</van-tabbar-item>
-    <van-tabbar-item name="user" to="/user" icon="user-o">我的</van-tabbar-item>
-  </van-tabbar>
+  <t-tab-bar v-model="value" theme="tag" @change="changeView(value)" :split="false">
+    <t-tab-bar-item v-for="item in list" :key="item.value" :value="item.value">
+      {{ item.label }}
+      <template #icon>
+        <t-icon :name="item.icon" />
+      </template>
+    </t-tab-bar-item>
+  </t-tab-bar>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.custom-navbar {
+  --td-navbar-bg-color: #0052d9;
+  --td-navbar-color: #fff;
+}
+</style>
