@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 defineOptions({
   name: 'LayoutIndex'
 })
@@ -15,29 +16,49 @@ const list = ref([
   { value: '/user', label: '我的', icon: 'user' }
 ])
 
+interface TitleMap {
+  [key: string]: string
+}
+
 const navTitle = ref('友链')
 
 // const visible = ref(false)
 const onClick = () => {
-  value.value = '/user'
-  nextTick(() => {
-    router.push('/user')
-    navTitle.value = '用户信息'
-  })
+  router.push('/user')
 }
 
+// 监听url地址栏变化
+watch(
+  () => route.path,
+  (newPath) => {
+    router.push(newPath)
+    value.value = newPath
+    // 使用对象映射来设置 navTitle
+    const titleMap: TitleMap = {
+      '/home': '友链',
+      '/team': '队伍',
+      '/user': '用户信息'
+    }
+
+    // 根据路径设置 navTitle
+    if (titleMap[newPath]) {
+      navTitle.value = titleMap[newPath]
+    } else {
+      navTitle.value = '' // 或者设置一个默认值
+    }
+  },
+  {
+    immediate: true,
+    deep: true
+  }
+)
+
 const onchange = (val: string) => {
-  router.push(val)
-  switch (val) {
-    case '/home':
-      navTitle.value = '友链'
-      break
-    case '/team':
-      navTitle.value = '队伍'
-      break
-    case '/user':
-      navTitle.value = '用户信息'
-      break
+  try {
+    // 跳转路由，并捕获错误
+    router.push(val)
+  } catch (error) {
+    console.error('Failed to push route:', error)
   }
 }
 </script>

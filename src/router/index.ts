@@ -20,7 +20,8 @@ const router = createRouter({
         { path: '/user', component: UserView }
       ]
     },
-    { path: '/search', component: SearchView }
+    { path: '/search', component: SearchView },
+    { path: '/edit', component: () => import('@/views/EditView.vue') }
   ]
 })
 
