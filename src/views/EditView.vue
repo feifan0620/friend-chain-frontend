@@ -39,13 +39,14 @@ const onSave = () => {
         @focus="saveDisabled = false"
         :placeholder="'请设置你的' + route.query.editText"
         :maxcharacter="24"
-        clearable
+        :clearable="false"
+        type="tel"
         v-model:value.trim="currentValue"
         borderless
       />
     </div>
 
-    <div class="user-name-tip">
+    <div v-if="route.query.editKey === 'username'" class="user-name-tip">
       <span>昵称最多24个字符(1个汉字表示2个字符长度)。</span>
     </div>
   </div>
@@ -66,7 +67,7 @@ const onSave = () => {
   }
   .user-name-tip {
     width: 92vw;
-    margin: 12px auto;
+    margin: 0 auto;
     color: #999;
     font-size: 14px;
   }
