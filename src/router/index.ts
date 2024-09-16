@@ -3,6 +3,7 @@ import LayoutIndex from '@/views/layout/Index.vue'
 import HomeView from '@/views/layout/HomeView.vue'
 import TeamView from '@/views/layout/TeamView.vue'
 import UserView from '@/views/layout/UserView.vue'
+import SearchView from '@/views/SearchView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,7 +19,8 @@ const router = createRouter({
         { path: '/team', component: TeamView },
         { path: '/user', component: UserView }
       ]
-    }
+    },
+    { path: '/search', component: SearchView }
   ]
 })
 
