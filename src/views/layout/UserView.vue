@@ -3,6 +3,7 @@ import router from '@/router'
 import { reactive, type Ref, ref } from 'vue'
 import type { TdTreeSelectProps, TreeSelectValue } from 'tdesign-mobile-vue'
 
+// 用户信息
 const user = {
   id: '1',
   username: 'Feifan',
@@ -18,46 +19,31 @@ const user = {
   createTime: new Date().toLocaleDateString()
 }
 
-const goEditUserName = () => {
+/**
+ * 跳转到编辑页面的函数
+ *
+ * @param editKey - 编辑项的唯一键值
+ * @param editName - 编辑项的名称
+ * @param currentValue - 编辑项的当前值
+ */
+const goEdit = (editKey: string, editName: string, currentValue: string) => {
   router.push({
     path: '/edit',
     query: {
-      editKey: 'username',
-      editText: '昵称',
-      currentValue: user.username
+      editKey,
+      editName,
+      currentValue
     }
   })
 }
 
-const goEditPhone = () => {
-  router.push({
-    path: '/edit',
-    query: {
-      editKey: 'phone',
-      editText: '手机号',
-      currentValue: user.phone
-    }
-  })
-}
-
-const goEditEmail = () => {
-  router.push({
-    path: '/edit',
-    query: {
-      editKey: 'email',
-      editText: '邮箱',
-      currentValue: user.email
-    }
-  })
-}
-const cityState = reactive({
+const genderState = reactive({
   show: false,
   city: []
 })
 
 const onCancel = () => {
-  cityState.show = false
-  cityState.show = false
+  genderState.show = false
 }
 
 const genderOptions = () => {
@@ -134,30 +120,49 @@ const avatarImg = ref(['https://tdesign.gtimg.com/mobile/demos/avatar4.png'])
 </script>
 
 <template>
+  <!-- 用户信息 -->
   <t-cell-group bordered>
     <t-cell class="my-avatar" @click="avatarSheetVisible = true" title="头像" arrow hover>
       <template #note>
         <t-avatar shape="circle" size="large" :image="user.avatarUrl">FF</t-avatar>
       </template>
     </t-cell>
-    <t-cell title="昵称" @click="goEditUserName" :note="user.username" arrow hover />
+    <t-cell
+      title="昵称"
+      @click="goEdit('username', '昵称', user.username)"
+      :note="user.username"
+      arrow
+      hover
+    />
     <t-cell
       title="性别"
-      @click="cityState.show = true"
+      @click="genderState.show = true"
       :note="user.gender === 0 ? '男' : '女'"
       arrow
       hover
     />
-    <t-cell title="手机号" @click="goEditPhone" :note="user.phone" arrow hover />
-    <t-cell title="邮箱" @click="goEditEmail" :note="user.email" arrow hover />
+    <t-cell
+      title="手机号"
+      @click="goEdit('phone', '手机号', user.phone)"
+      :note="user.phone"
+      arrow
+      hover
+    />
+    <t-cell
+      title="邮箱"
+      @click="goEdit('email', '邮箱', user.email)"
+      :note="user.email"
+      arrow
+      hover
+    />
     <t-cell title="标签" @click="visible = true" :note="user.tags.join('、')" arrow hover />
     <t-cell title="加入时间" :note="user.createTime" />
     <t-cell title="UID" :note="user.userCode" />
   </t-cell-group>
 
-  <t-popup v-model="cityState.show" placement="bottom">
+  <t-popup class="gender-popup" v-model="genderState.show" placement="bottom">
     <t-picker
-      v-model="cityState.city"
+      v-model="genderState.city"
       title="选择性别"
       @cancel="onCancel"
       :columns="genderOptions"

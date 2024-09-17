@@ -2,15 +2,9 @@
 import { type Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { TdTreeSelectProps, TreeSelectValue } from 'tdesign-mobile-vue'
-
 const router = useRouter()
 
-// 返回首页
-const goHome = () => {
-  router.push('/')
-}
-
-// 原始标签列表
+// 原始标签列表,用于获取标签列表的初始值及搜索后的标签列表
 const originalTagList = [
   {
     label: '年级',
@@ -44,55 +38,72 @@ const originalTagList = [
     ]
   }
 ]
-// 当前显示（搜索后）标签列表
+// 当前（搜索后）显示的标签列表，用于动态渲染树形标签选择器的选项
 const tagList: Ref<any> = ref(originalTagList)
-
-// 标签搜索关键字
+// 标签搜索框关键字
 const searchText = ref('')
-// 标签搜索
+/**
+ * 搜索树形标签选择器中的标签
+ * 当用户在搜索框输入文本并触发搜索时，此方法将被调用
+ */
 const onSearch = () => {
+  // 根据原始标签列表和搜索文本创建一个新的标签列表
   tagList.value = originalTagList.map((parentTag: any) => {
+    // 为每个父标签创建一个浅拷贝
     const tempParentTag: any = { ...parentTag }
+    // 复制每个父标签的子标签列表
     const tempChildren = [...parentTag.children]
-    // const iterableParentTag = Array.isArray(parentTag) ? parentTag : []
+    // 过滤子标签列表，只保留标签值中包含搜索文本的子标签
     tempParentTag.children = tempChildren.filter((child) => child.value.includes(searchText.value))
+    // 返回包含过滤后子标签的父标签拷贝
     return tempParentTag
   })
 }
 
-// 已选标签列表标签取消选中监听事件
-function onClickClose(index: string) {
-  ;(selectedTagList.value[1] as any).splice(index, 1)
+// 树形标签选择器中选中的标签的列表，用于渲染已选标签
+const selectedTagList: Ref<Array<TreeSelectValue>> = ref(['年级', []])
+
+/**
+ * 用户点击标签关闭按钮时的处理函数
+ * 该函数的作用是删除已选标签列表中的标签时，同步取消选中标签选择器中的对应标签
+ * @param index 要移除的标签在数组中的索引
+ */
+function onClickClose(index: string | number) {
+  ;(selectedTagList.value[1] as Array<TreeSelectValue>).splice(index as number, 1)
 }
 
-// 选中标签列表，用于渲染已选标签
-const selectedTagList: Ref<Array<TreeSelectValue>> = ref(['年级', ['大一']])
-// 树形选择器标签选择状态改变监听事件
+// 树形标签选择器选择状态改变监听事件，该值与标签选择器中的值双向绑定
 const onChange: TdTreeSelectProps['onChange'] = (itemValue: TreeSelectValue) => {
   console.log(itemValue)
 }
 </script>
 
 <template>
-  <t-navbar class="search" :fixed="false" @right-click="goHome">
+  <!-- 顶部导航栏 -->
+  <t-navbar class="search" :fixed="false" @right-click="router.push('/')">
+    <!-- 左侧搜索框区域 -->
     <template #left>
       <t-search
         v-model.trim="searchText"
-        :clearable="true"
+        clearable
         shape="round"
         placeholder="请输入需要搜索的标签"
         @keyup.enter="onSearch"
         @onSubmit="onSearch"
       ></t-search>
     </template>
+    <!-- 右侧返回首页图标 -->
     <template #right>
       <t-icon name="home" size="24px" />
     </template>
   </t-navbar>
 
-  <div class="select-tag">
+  <!-- 已选标签区域 -->
+  <div class="selected-tag">
     <div class="summary">已选标签</div>
     <t-row gutter="10">
+      <!-- selectedTagList 的第二项为已选标签列表 -->
+      <!-- selectedTagList:[ '年级',[ '大一', '大二' ] ] -->
       <t-col v-for="(item, index) in selectedTagList[1]" :key="item" span="6" class="tag">
         <t-tag closable variant="light" @close="onClickClose(index)">
           {{ item }}
@@ -100,6 +111,7 @@ const onChange: TdTreeSelectProps['onChange'] = (itemValue: TreeSelectValue) => 
       </t-col>
     </t-row>
   </div>
+  <!-- 标签选择器区域 -->
   <div class="select-tree">
     <div class="summary">标签选择</div>
     <t-tree-select
@@ -113,26 +125,45 @@ const onChange: TdTreeSelectProps['onChange'] = (itemValue: TreeSelectValue) => 
   </div>
 </template>
 
+template
 <style lang="less" scoped>
-.t-icon-home {
-  margin-right: 8px;
-}
-.summary {
-  color: #999;
-}
-.select-tag {
-  padding: 16px;
-  .tag {
-    margin-top: 14px;
+// 全局样式变量
+@gray-light: #999;
+@padding: 16px;
+@margin-top: 14px;
+
+// 顶部导航栏
+.search {
+  // 搜索框右侧返回首页图标
+  .t-icon-home {
+    margin-right: 8px;
   }
 }
+
+// 区域标题
+.summary {
+  color: @gray-light;
+}
+
+// 已选标签列表区域
+.selected-tag {
+  padding: @padding;
+  height: 38vh;
+  // 每列标签上外边距
+  .tag {
+    margin-top: @margin-top;
+  }
+}
+
+// 标签选择器区域
 .select-tree {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  .t-tree-select {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+  }
   .summary {
-    margin: 16px;
+    margin: @padding;
   }
 }
 </style>

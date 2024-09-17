@@ -1,69 +1,59 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
 const router = useRouter()
 const route = useRoute()
 defineOptions({
   name: 'LayoutIndex'
 })
 
-// tabbar 配置
-const value = ref('/home')
+// 标签栏当前值
+const tabValue = ref('/home')
+// 标签栏配置项
 const list = ref([
   { value: '/home', label: '首页', icon: 'home' },
   { value: '/team', label: '队伍', icon: 'flag-3' },
   { value: '/user', label: '我的', icon: 'user' }
 ])
 
+// 导航栏标题
+const navTitle = ref('友链')
+
+// 定义一个标题映射接口，用于存储路径和对应页面标题的键值对
 interface TitleMap {
   [key: string]: string
 }
-
-const navTitle = ref('友链')
-
-// const visible = ref(false)
-const onClick = () => {
-  router.push('/user')
-}
-
-// 监听url地址栏变化
+// 监听路由路径的变化，以便实时更新页面标题和导航标题
 watch(
   () => route.path,
   (newPath) => {
+    // 当路径发生变化时，导航到新的路径
     router.push(newPath)
-    value.value = newPath
-    // 使用对象映射来设置 navTitle
+    // 更新tab的值为新的路径
+    tabValue.value = newPath
+    // 定义页面标题的路径映射
     const titleMap: TitleMap = {
       '/home': '友链',
       '/team': '队伍',
       '/user': '用户信息'
     }
-
-    // 根据路径设置 navTitle
+    // 根据当前路径设置导航标题
     if (titleMap[newPath]) {
       navTitle.value = titleMap[newPath]
     } else {
-      navTitle.value = '' // 或者设置一个默认值
+      // 如果当前路径没有对应的标题，则清空导航标题
+      navTitle.value = ''
     }
   },
   {
-    immediate: true,
-    deep: true
+    immediate: true, // 立即执行一次监听回调
+    deep: true // 深度监听，适用于值为对象的情况
   }
 )
-
-const onchange = (val: string) => {
-  try {
-    // 跳转路由，并捕获错误
-    router.push(val)
-  } catch (error) {
-    console.error('Failed to push route:', error)
-  }
-}
 </script>
 
 <template>
+  <!-- 顶部导航栏 -->
   <t-navbar
     :title="navTitle"
     :fixed="false"
@@ -71,17 +61,21 @@ const onchange = (val: string) => {
     @right-click="router.push('/search')"
     class="custom-navbar"
   >
+    <!-- 导航栏右侧搜索图标 -->
     <template #left>
-      <t-icon name="user" size="24px" @click="onClick" />
+      <t-icon name="user" size="24px" @click="router.push('/user')" />
     </template>
+    <!-- 导航栏左侧用户图标 -->
     <template #right>
       <t-icon name="search" size="24px" />
     </template>
   </t-navbar>
 
+  <!-- 根据路由路径显示不同的页面（首页、队伍、我的）-->
   <router-view />
 
-  <t-tab-bar v-model="value" theme="tag" @change="onchange(value)" :split="false">
+  <!-- 底部标签栏 -->
+  <t-tab-bar v-model="tabValue" theme="tag" @change="router.push(tabValue)" :split="false">
     <t-tab-bar-item v-for="item in list" :key="item.value" :value="item.value">
       {{ item.label }}
       <template #icon>
@@ -89,11 +83,10 @@ const onchange = (val: string) => {
       </template>
     </t-tab-bar-item>
   </t-tab-bar>
-
-  <!--  <t-popup v-model="visible" placement="left" style="padding: 100px" />-->
 </template>
 
 <style lang="less" scoped>
+// 自定义导航栏样式
 .custom-navbar {
   --td-navbar-bg-color: #0052d9;
   --td-navbar-color: #fff;
