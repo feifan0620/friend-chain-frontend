@@ -13,7 +13,10 @@ const originalTagList = [
       { label: '大一', value: '大一' },
       { label: '大二', value: '大二' },
       { label: '大三', value: '大三' },
-      { label: '大四', value: '大四' }
+      { label: '大四', value: '大四' },
+      { label: '研一', value: '研一' },
+      { label: '研二', value: '研二' },
+      { label: '研三', value: '研三' }
     ]
   },
   {
@@ -33,13 +36,12 @@ const originalTagList = [
       { label: '运维', value: '运维' },
       { label: '测试', value: '测试' },
       { label: '产品经理', value: '产品经理' },
-      { label: 'UI设计', value: 'UI设计' },
-      { label: '其他', value: '其他' }
+      { label: 'UI设计', value: 'UI设计' }
     ]
   }
 ]
 // 当前（搜索后）显示的标签列表，用于动态渲染树形标签选择器的选项
-const tagList: Ref<any> = ref(originalTagList)
+const tagList = ref(originalTagList)
 // 标签搜索框关键字
 const searchText = ref('')
 /**

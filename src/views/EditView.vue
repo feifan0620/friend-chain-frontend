@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { type Ref, ref } from 'vue'
-import { Dialog } from 'tdesign-mobile-vue'
+import { Dialog, Toast } from 'tdesign-mobile-vue'
 const router = useRouter()
 const route = useRoute()
 // 保存按钮可以状态
@@ -12,11 +12,7 @@ const editKey: string = route.query.editKey as string
 const editName: string = route.query.editName as string
 const onSave = () => {
   if (currentValue.value === '') {
-    Dialog.confirm({
-      title: '提示',
-      content: `${editName}不能为空`,
-      confirmBtn: '确认'
-    })
+    Toast(`${editName}不能为空`)
     return
   }
   switch (editKey) {
@@ -25,22 +21,14 @@ const onSave = () => {
       break
     case 'phone':
       if (!currentValue.value.match(/^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/)) {
-        Dialog.confirm({
-          title: '提示',
-          content: '请输入正确的手机号',
-          confirmBtn: '确认'
-        })
+        Toast('请输入正确的手机号')
         return
       }
       console.log({ phone: currentValue.value })
       break
     case 'email':
       if (!currentValue.value.match(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/)) {
-        Dialog.confirm({
-          title: '提示',
-          content: '邮箱格式不正确',
-          confirmBtn: '确认'
-        })
+        Toast('请输入正确的邮箱')
         return
       }
       console.log({ email: currentValue.value })

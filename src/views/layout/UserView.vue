@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import router from '@/router'
-import { reactive, type Ref, ref } from 'vue'
+import { computed, type Ref, ref } from 'vue'
 import type { TdTreeSelectProps, TreeSelectValue } from 'tdesign-mobile-vue'
 
 // 用户信息
-const user = {
+const user = ref({
   id: '1',
   username: 'Feifan',
   userAccount: 'feifan',
   avatarUrl: 'https://tdesign.gtimg.com/mobile/demos/avatar4.png',
   gender: 0,
   userPassword: '12345678',
-  tags: ['Java', '前端', '大数据'],
+  tags: ['大三', 'Java', '大数据'],
   phone: '13123452345',
   email: '123456@qq.com',
   userCode: '10001',
   // 时间转换为字符串(不包含时分秒)
   createTime: new Date().toLocaleDateString()
-}
+})
 
 /**
  * 跳转到编辑页面的函数
@@ -37,30 +37,52 @@ const goEdit = (editKey: string, editName: string, currentValue: string) => {
   })
 }
 
-const genderState = reactive({
-  show: false,
-  city: []
+// 性别选择器状态
+const genderState = ref({
+  show: false, // 显示选择器状态
+  gender: [user.value.gender] // 当前选中的性别值
 })
 
-const onCancel = () => {
-  genderState.show = false
-}
-
+// 性别选择器选项
 const genderOptions = () => {
   return [
     {
       label: '男',
-      value: '0'
+      value: 0
     },
     {
       label: '女',
-      value: '1'
+      value: 1
+    },
+    {
+      label: '保密',
+      value: 2
     }
   ]
 }
 
-const visible = ref(false)
-const onHide = () => (visible.value = false)
+// 将性别值转换为对应文本
+const genderValueText = computed(() => {
+  switch (genderState.value.gender[0]) {
+    case 0:
+      return '男'
+    case 1:
+      return '女'
+    default:
+      return '保密'
+  }
+})
+
+/**
+ * 性别选择器确定按钮点击事件
+ */
+const onGenderConfirm = () => {
+  console.log({ gender: genderState.value.gender[0] })
+  genderState.value.show = false
+}
+
+// 标签选择器状态
+const tagPickerVisible = ref(false)
 
 // 已选标签列表标签取消选中监听事件
 function onClickClose(index: string) {
@@ -75,7 +97,10 @@ const originalTagList = [
       { label: '大一', value: '大一' },
       { label: '大二', value: '大二' },
       { label: '大三', value: '大三' },
-      { label: '大四', value: '大四' }
+      { label: '大四', value: '大四' },
+      { label: '研一', value: '研一' },
+      { label: '研二', value: '研二' },
+      { label: '研三', value: '研三' }
     ]
   },
   {
@@ -95,28 +120,42 @@ const originalTagList = [
       { label: '运维', value: '运维' },
       { label: '测试', value: '测试' },
       { label: '产品经理', value: '产品经理' },
-      { label: 'UI设计', value: 'UI设计' },
-      { label: '其他', value: '其他' }
+      { label: 'UI设计', value: 'UI设计' }
     ]
   }
 ]
+// 当前显示（搜索后）的标签列表
+const tagList = ref(originalTagList)
+// 选中标签列表，用于渲染用户标签
+const selectedTagList: Ref<Array<TreeSelectValue>> = ref(['年级', user.value.tags])
 
-// 当前显示（搜索后）标签列表
-const tagList: Ref<any> = ref(originalTagList)
-// 选中标签列表，用于渲染已选标签
-const selectedTagList: Ref<Array<TreeSelectValue>> = ref(['年级', ['大一']])
-// 树形选择器标签选择状态改变监听事件
-const onChange: TdTreeSelectProps['onChange'] = (itemValue: TreeSelectValue) => {
-  console.log(itemValue)
+/**
+ * 确认标签选择操作
+ */
+const onTagsConfirm = () => {
+  // 检查当前选中的标签列表与用户已有的标签列表是否相同
+  // 如果不相同，才进行更新用户的标签列表的操作
+  if (selectedTagList.value[1] !== user.value.tags) {
+    // 更新用户的标签列表，并断言新标签列表为字符串数组
+    user.value.tags = selectedTagList.value[1] as string[]
+    // 输出更新后的用户标签列表至控制台
+    console.log(user.value.tags)
+  }
+  // 关闭标签选择器的可见状态，表示用户已完成选择操作
+  tagPickerVisible.value = false
 }
 
+// 头像选择弹窗状态
 const avatarSheetVisible = ref(false)
+// 头像选择弹窗选项
 const avatarSheetItems = ['选择图片', '拍照']
-const onActionSheetSelect = (selectedItem: any) => {
+
+/**
+ * 处理操作面板选择事件的函数
+ */
+const onActionSheetSelect = (selectedItem: string) => {
   console.log(selectedItem)
 }
-
-const avatarImg = ref(['https://tdesign.gtimg.com/mobile/demos/avatar4.png'])
 </script>
 
 <template>
@@ -134,13 +173,7 @@ const avatarImg = ref(['https://tdesign.gtimg.com/mobile/demos/avatar4.png'])
       arrow
       hover
     />
-    <t-cell
-      title="性别"
-      @click="genderState.show = true"
-      :note="user.gender === 0 ? '男' : '女'"
-      arrow
-      hover
-    />
+    <t-cell title="性别" @click="genderState.show = true" :note="genderValueText" arrow hover />
     <t-cell
       title="手机号"
       @click="goEdit('phone', '手机号', user.phone)"
@@ -155,25 +188,39 @@ const avatarImg = ref(['https://tdesign.gtimg.com/mobile/demos/avatar4.png'])
       arrow
       hover
     />
-    <t-cell title="标签" @click="visible = true" :note="user.tags.join('、')" arrow hover />
+    <t-cell
+      title="标签"
+      @click="tagPickerVisible = true"
+      :note="user.tags.join('、')"
+      arrow
+      hover
+    />
     <t-cell title="加入时间" :note="user.createTime" />
     <t-cell title="UID" :note="user.userCode" />
   </t-cell-group>
 
+  <!-- 性别选择器 -->
   <t-popup class="gender-popup" v-model="genderState.show" placement="bottom">
     <t-picker
-      v-model="genderState.city"
+      v-model="genderState.gender"
       title="选择性别"
-      @cancel="onCancel"
+      @cancel="genderState.show = false"
+      @confirm="onGenderConfirm"
       :columns="genderOptions"
     />
   </t-popup>
 
-  <t-popup class="tag-select-popup" v-model="visible" placement="bottom" style="height: 50vh">
+  <!-- 标签选择器 -->
+  <t-popup
+    class="tag-select-popup"
+    v-model="tagPickerVisible"
+    placement="bottom"
+    style="height: 50vh"
+  >
     <div class="header">
-      <div class="btn btn--cancel" aria-role="button" @click="onHide">取消</div>
+      <div class="btn btn--cancel" aria-role="button" @click="tagPickerVisible = false">取消</div>
       <div class="title">选择标签</div>
-      <div class="btn btn--confirm" aria-role="button" @click="onHide">确定</div>
+      <div class="btn btn--confirm" aria-role="button" @click="onTagsConfirm">确定</div>
     </div>
     <div class="select-tree">
       <t-tree-select
@@ -182,11 +229,11 @@ const avatarImg = ref(['https://tdesign.gtimg.com/mobile/demos/avatar4.png'])
         height="50vh"
         multiple
         filterable
-        @change="onChange"
       ></t-tree-select>
     </div>
   </t-popup>
 
+  <!-- 头像选择弹窗 -->
   <t-action-sheet
     v-model="avatarSheetVisible"
     :items="avatarSheetItems"
@@ -196,6 +243,7 @@ const avatarImg = ref(['https://tdesign.gtimg.com/mobile/demos/avatar4.png'])
 </template>
 
 <style lang="less" scoped>
+// 标签选择弹窗样式
 .tag-select-popup {
   .header {
     display: flex;
