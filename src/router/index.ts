@@ -22,7 +22,8 @@ const router = createRouter({
     },
     { path: '/search', component: SearchView },
     { path: '/result', component: SearchResult },
-    { path: '/edit', component: EditView }
+    { path: '/edit', component: EditView },
+    { path: '/login', component: () => import('@/views/LoginView.vue') }
   ]
 })
 
