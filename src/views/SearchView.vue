@@ -121,20 +121,20 @@ const onUserSearch = () => {
     <t-row gutter="10">
       <!-- selectedTagList 的第二项为已选标签列表 -->
       <!-- selectedTagList:[ '年级',[ '大一', '大二' ] ] -->
-      <t-col v-for="(item, index) in selectedTagList[1]" :key="item" span="6" class="tag">
-        <t-tag closable variant="light" @close="onClickClose(index)">
+      <t-col v-for="(item, index) in selectedTagList[1]" :key="item" class="tag">
+        <t-tag size="large" closable variant="light" @close="onClickClose(index)">
           {{ item }}
         </t-tag>
       </t-col>
     </t-row>
   </div>
 
-  <!-- 匹配按钮 -->
-  <t-button class="search-btn" block size="medium" theme="primary" @click="onUserSearch">
-    匹配用户
-  </t-button>
   <!-- 标签选择器区域 -->
   <div class="select-tree">
+    <!-- 匹配按钮 -->
+    <t-button class="search-btn" block size="medium" theme="primary" @click="onUserSearch">
+      匹配用户
+    </t-button>
     <div class="summary">标签选择</div>
     <t-tree-select
       v-model="selectedTagList"
@@ -147,7 +147,6 @@ const onUserSearch = () => {
   </div>
 </template>
 
-template
 <style lang="less" scoped>
 // 全局样式变量
 @gray-light: #999;
@@ -169,16 +168,13 @@ template
 // 已选标签列表区域
 .selected-tag {
   padding: 16px;
-  height: 36vh;
+  height: 40vh;
+  overflow: auto;
   // 每列标签上外边距
   .tag {
     margin-top: @margin-top;
+    margin-right: 6px;
   }
-}
-
-.search-btn {
-  width: 92vw;
-  margin: 0 auto;
 }
 
 // 标签选择器区域
@@ -186,12 +182,16 @@ template
   position: fixed;
   bottom: 0;
   height: 50vh;
+  .search-btn {
+    width: 92vw;
+    margin: 0 auto;
+  }
+
   .t-tree-select {
     width: 100vw;
   }
   .summary {
-    margin-left: 16px;
-    margin-bottom: 16px;
+    margin: 16px 16px;
   }
 }
 </style>

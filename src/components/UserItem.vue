@@ -66,19 +66,21 @@ const userTags = ref([
 
 <template>
   <div class="user-item">
-    <t-avatar
-      class="user-avatar"
-      size="80px"
-      shape="round"
-      :image="`https://tdesign.gtimg.com/mobile/demos/avatar${props.avatar}.png`"
-    />
     <div class="user-info">
-      <div class="user-nickname">{{ nicknames[username] }}</div>
-      <div class="user-tags">
-        <t-tag variant="light" v-for="item in userTags[tags]" :key="item">{{ item }}</t-tag>
-      </div>
-      <div class="user-desc">
-        <span>{{ personalIntros[desc] }}</span>
+      <t-avatar
+        class="user-avatar"
+        size="80px"
+        shape="round"
+        :image="`https://tdesign.gtimg.com/mobile/demos/avatar${props.avatar}.png`"
+      />
+      <div class="user-info-right">
+        <div class="user-nickname">{{ nicknames[username] }}</div>
+        <div class="user-tags">
+          <t-tag variant="light" v-for="item in userTags[tags]" :key="item">{{ item }}</t-tag>
+        </div>
+        <div class="user-desc">
+          <span>{{ personalIntros[desc] }}</span>
+        </div>
       </div>
     </div>
     <t-button size="small" theme="light" class="contact-me-btn">联系我</t-button>
@@ -95,45 +97,49 @@ const userTags = ref([
   justify-content: space-between;
   background-color: #fff;
   border-radius: 8px;
-  .user-avatar {
-    margin-right: 10px;
-    align-self: center;
-  }
   .user-info {
-    width: 50vw;
+    width: calc(95vw - 90px);
     display: flex;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    .user-nickname {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 6px;
+    .user-avatar {
+      margin-right: 8px;
+      align-self: center;
     }
-    .user-tags {
-      margin-bottom: 6px;
-      overflow: hidden; /* 隐藏超出容器的内容 */
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      color: transparent;
-      .t-tag {
-        margin-right: 4px;
-        font-size: 10px;
-        color: #999999;
+    .user-info-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: calc(100% - 96px);
+      margin-right: 8px;
+      .user-nickname {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 6px;
       }
-    }
-
-    .user-desc {
-      width: 95%;
-      white-space: nowrap;
-      overflow: hidden; /* 隐藏超出容器的内容 */
-      text-overflow: ellipsis; /* 超出部分显示省略号 */
-      font-size: 14px;
-      color: #bbb;
+      .user-tags {
+        margin-bottom: 6px;
+        overflow: hidden; /* 隐藏超出容器的内容 */
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: transparent;
+        .t-tag {
+          margin-right: 4px;
+          font-size: 10px;
+          color: #999999;
+        }
+      }
+      .user-desc {
+        white-space: nowrap;
+        overflow: hidden; /* 隐藏超出容器的内容 */
+        text-overflow: ellipsis; /* 超出部分显示省略号 */
+        font-size: 14px;
+        color: #bbb;
+      }
     }
   }
   .contact-me-btn {
     align-self: center;
+    position: relative;
+    right: 0px;
   }
 }
 </style>
