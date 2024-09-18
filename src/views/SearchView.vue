@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { type Ref, ref } from 'vue'
+import { computed, type Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { TdTreeSelectProps, TreeSelectValue } from 'tdesign-mobile-vue'
+
 const router = useRouter()
 
 // 原始标签列表,用于获取标签列表的初始值及搜索后的标签列表
@@ -48,7 +49,7 @@ const searchText = ref('')
  * 搜索树形标签选择器中的标签
  * 当用户在搜索框输入文本并触发搜索时，此方法将被调用
  */
-const onSearch = () => {
+const onSearchTags = () => {
   // 根据原始标签列表和搜索文本创建一个新的标签列表
   tagList.value = originalTagList.map((parentTag: any) => {
     // 为每个父标签创建一个浅拷贝
@@ -64,6 +65,10 @@ const onSearch = () => {
 
 // 树形标签选择器中选中的标签的列表，用于渲染已选标签
 const selectedTagList: Ref<Array<TreeSelectValue>> = ref(['年级', []])
+// 计算已选标签列表
+const tags = computed(() => {
+  return selectedTagList.value[1]
+})
 
 /**
  * 用户点击标签关闭按钮时的处理函数
@@ -76,7 +81,17 @@ function onClickClose(index: string | number) {
 
 // 树形标签选择器选择状态改变监听事件，该值与标签选择器中的值双向绑定
 const onChange: TdTreeSelectProps['onChange'] = (itemValue: TreeSelectValue) => {
-  console.log(itemValue)
+  console.log(tags.value)
+}
+
+const onUserSearch = () => {
+  // 跳转到用户列表页面，并携带已选标签列表
+  router.push({
+    path: '/result',
+    query: {
+      tags: tags.value as string[]
+    }
+  })
 }
 </script>
 
@@ -90,8 +105,8 @@ const onChange: TdTreeSelectProps['onChange'] = (itemValue: TreeSelectValue) => 
         clearable
         shape="round"
         placeholder="请输入需要搜索的标签"
-        @keyup.enter="onSearch"
-        @onSubmit="onSearch"
+        @keyup.enter="onSearchTags"
+        @onSearch="onSearchTags"
       ></t-search>
     </template>
     <!-- 右侧返回首页图标 -->
@@ -113,6 +128,11 @@ const onChange: TdTreeSelectProps['onChange'] = (itemValue: TreeSelectValue) => 
       </t-col>
     </t-row>
   </div>
+
+  <!-- 匹配按钮 -->
+  <t-button class="search-btn" block size="medium" theme="primary" @click="onUserSearch">
+    匹配用户
+  </t-button>
   <!-- 标签选择器区域 -->
   <div class="select-tree">
     <div class="summary">标签选择</div>
@@ -131,7 +151,6 @@ template
 <style lang="less" scoped>
 // 全局样式变量
 @gray-light: #999;
-@padding: 16px;
 @margin-top: 14px;
 
 // 顶部导航栏
@@ -149,23 +168,30 @@ template
 
 // 已选标签列表区域
 .selected-tag {
-  padding: @padding;
-  height: 38vh;
+  padding: 16px;
+  height: 36vh;
   // 每列标签上外边距
   .tag {
     margin-top: @margin-top;
   }
 }
 
+.search-btn {
+  width: 92vw;
+  margin: 0 auto;
+}
+
 // 标签选择器区域
 .select-tree {
+  position: fixed;
+  bottom: 0;
+  height: 50vh;
   .t-tree-select {
-    position: fixed;
-    bottom: 0;
     width: 100vw;
   }
   .summary {
-    margin: @padding;
+    margin-left: 16px;
+    margin-bottom: 16px;
   }
 }
 </style>

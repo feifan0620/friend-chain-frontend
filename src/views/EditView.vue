@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { type Ref, ref } from 'vue'
-import { Dialog, Toast } from 'tdesign-mobile-vue'
+import { Toast } from 'tdesign-mobile-vue'
+
 const router = useRouter()
 const route = useRoute()
 // 保存按钮可以状态
@@ -11,7 +12,7 @@ const currentValue: Ref<String> = ref(route.query.currentValue as string)
 const editKey: string = route.query.editKey as string
 const editName: string = route.query.editName as string
 const onSave = () => {
-  if (currentValue.value === '') {
+  if (editKey === 'username' && currentValue.value === '') {
     Toast(`${editName}不能为空`)
     return
   }
@@ -33,6 +34,9 @@ const onSave = () => {
       }
       console.log({ email: currentValue.value })
       break
+    case 'profile':
+      console.log({ profile: currentValue.value })
+      break
   }
 }
 </script>
@@ -49,20 +53,32 @@ const onSave = () => {
   </t-navbar>
 
   <!-- 输入框 -->
-  <div class="input-view">
+  <t-textarea
+    v-if="editKey === 'profile'"
+    maxlength="36"
+    @focus="saveDisabled = false"
+    indicator
+    class="textarea-example"
+    placeholder="请输入您的个人简介"
+    v-model:value.trim="currentValue"
+  ></t-textarea>
+
+  <div v-else class="input-view">
+    <div class="user-name-tip">
+      <span>昵称最多24个字符(1个汉字表示2个字符长度)。</span>
+    </div>
     <div class="input">
       <t-input
         @change="saveDisabled = false"
-        :placeholder="'请设置您的' + editName"
+        :placeholder="'请输入您的' + editName"
         :maxcharacter="24"
         :type="editKey === 'phone' ? 'number' : 'text'"
+        :label="editKey === 'phone' ? '+86' : ''"
         clearable
+        clearTrigger="focus"
+        borderless
         v-model:value.trim="currentValue"
       />
-    </div>
-
-    <div v-if="editKey === 'username'" class="user-name-tip">
-      <span>昵称最多24个字符(1个汉字表示2个字符长度)。</span>
     </div>
   </div>
 </template>
@@ -72,19 +88,22 @@ const onSave = () => {
   margin-right: 6px;
 }
 .input-view {
-  height: 30vh;
+  height: 50vh;
   .input {
     width: 90vw;
     margin: 12px auto;
-    --td-input-bg-color: #efefef;
-    --td-input-border-radius: 5px;
-    --td-input-vertical-padding: 10px;
+    //--td-input-bg-color: #efefef;
+    --td-input-vertical-padding: 6px;
+    border-bottom: 1px solid #0052d9;
+    --td-font-size-m: 18px;
   }
   .user-name-tip {
     width: 90vw;
     margin: 0 auto;
     color: #999;
-    font-size: 14px;
   }
+}
+.textarea-example {
+  height: 30vh;
 }
 </style>

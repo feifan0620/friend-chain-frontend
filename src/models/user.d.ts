@@ -11,6 +11,7 @@ export type User = {
   tags?: string[]
   phone?: string
   email?: string
+  profile?: string
   userStatus?: number
   createTime?: date
   userRole?: number

@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import router from '@/router'
 import { computed, type Ref, ref } from 'vue'
-import type { TdTreeSelectProps, TreeSelectValue } from 'tdesign-mobile-vue'
+import type { TreeSelectValue } from 'tdesign-mobile-vue'
 
 // 用户信息
 const user = ref({
   id: '1',
   username: 'Feifan',
   userAccount: 'feifan',
-  avatarUrl: 'https://tdesign.gtimg.com/mobile/demos/avatar4.png',
+  avatarUrl: 'https://tdesign.gtimg.com/mobile/demos/avatar1.png',
   gender: 0,
   userPassword: '12345678',
   tags: ['大三', 'Java', '大数据'],
   phone: '13123452345',
   email: '123456@qq.com',
+  profile: '性格多变的双子男一枚，目前还有头发，阿巴阿巴阿巴，谢谢大家',
   userCode: '10001',
   // 时间转换为字符串(不包含时分秒)
   createTime: new Date().toLocaleDateString()
@@ -163,7 +164,9 @@ const onActionSheetSelect = (selectedItem: string) => {
   <t-cell-group bordered>
     <t-cell class="my-avatar" @click="avatarSheetVisible = true" title="头像" arrow hover>
       <template #note>
-        <t-avatar shape="circle" size="large" :image="user.avatarUrl">FF</t-avatar>
+        <t-avatar shape="circle" size="large">
+          {{ user.username.substring(0, 1) }}
+        </t-avatar>
       </template>
     </t-cell>
     <t-cell
@@ -190,8 +193,15 @@ const onActionSheetSelect = (selectedItem: string) => {
     />
     <t-cell
       title="标签"
-      @click="tagPickerVisible = true"
+      @click="goEdit('email', '邮箱', user.email)"
       :note="user.tags.join('、')"
+      arrow
+      hover
+    />
+    <t-cell
+      title="个人简介"
+      @click="goEdit('profile', '个人简介', user.profile)"
+      :note="user.profile.substring(0, 10).concat('...')"
       arrow
       hover
     />
@@ -243,6 +253,12 @@ const onActionSheetSelect = (selectedItem: string) => {
 </template>
 
 <style lang="less" scoped>
+.my-avatar {
+  --td-avatar-text-large-font-size: 26px;
+  //--td-avatar-bg-color: #0052d9;
+  //--td-avatar-content-color: #fff;
+}
+
 // 标签选择弹窗样式
 .tag-select-popup {
   .header {
