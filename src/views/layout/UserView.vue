@@ -2,6 +2,7 @@
 import router from '@/router'
 import { computed, type Ref, ref } from 'vue'
 import type { TreeSelectValue } from 'tdesign-mobile-vue'
+import { getCurrentUser } from '@/api/user'
 
 // 用户信息
 const user = ref({
@@ -19,6 +20,9 @@ const user = ref({
   // 时间转换为字符串(不包含时分秒)
   createTime: new Date().toLocaleDateString()
 })
+
+const res = await getCurrentUser()
+console.log(res)
 
 /**
  * 跳转到编辑页面的函数
