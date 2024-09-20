@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Toast } from 'tdesign-mobile-vue'
+import qs from 'qs'
 
 // 新建自定义 axios 实例
 const instance = axios.create({
