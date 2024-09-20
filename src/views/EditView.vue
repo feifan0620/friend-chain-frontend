@@ -64,9 +64,6 @@ const onSave = () => {
   ></t-textarea>
 
   <div v-else class="input-view">
-    <div class="user-name-tip">
-      <span>昵称最多24个字符(1个汉字表示2个字符长度)。</span>
-    </div>
     <div class="input">
       <t-input
         @change="saveDisabled = false"
@@ -80,6 +77,9 @@ const onSave = () => {
         v-model:value.trim="currentValue"
       />
     </div>
+    <div class="user-name-tip" v-if="editKey === 'username'">
+      <span>昵称最多24个字符(1个汉字表示2个字符长度)。</span>
+    </div>
   </div>
 </template>
 
@@ -91,11 +91,11 @@ const onSave = () => {
   height: 50vh;
   .input {
     width: 90vw;
-    margin: 12px auto;
+    margin: 18px auto;
     //--td-input-bg-color: #efefef;
-    --td-input-vertical-padding: 6px;
+    --td-input-vertical-padding: 8px;
     border-bottom: 1px solid #0052d9;
-    --td-font-size-m: 18px;
+    --td-font-size-m: 20px;
   }
   .user-name-tip {
     width: 90vw;

@@ -2,11 +2,12 @@
 import router from '@/router'
 import { computed, type Ref, ref } from 'vue'
 import type { TreeSelectValue } from 'tdesign-mobile-vue'
-import { getCurrentUser } from '@/api/user'
+import { useUserStore } from '@/stores/user'
+import type { User } from '@/models/user'
 
 // 用户信息
 const user = ref({
-  id: '1',
+  id: 1,
   username: 'Feifan',
   userAccount: 'feifan',
   avatarUrl: 'https://tdesign.gtimg.com/mobile/demos/avatar1.png',
@@ -20,9 +21,6 @@ const user = ref({
   // 时间转换为字符串(不包含时分秒)
   createTime: new Date().toLocaleDateString()
 })
-
-const res = await getCurrentUser()
-console.log(res)
 
 /**
  * 跳转到编辑页面的函数
@@ -89,10 +87,6 @@ const onGenderConfirm = () => {
 // 标签选择器状态
 const tagPickerVisible = ref(false)
 
-// 已选标签列表标签取消选中监听事件
-function onClickClose(index: string) {
-  ;(selectedTagList.value[1] as any).splice(index, 1)
-}
 // 原始标签列表
 const originalTagList = [
   {
@@ -165,7 +159,7 @@ const onActionSheetSelect = (selectedItem: string) => {
 
 <template>
   <!-- 用户信息 -->
-  <t-cell-group bordered>
+  <t-cell-group bordered class="user-info">
     <t-cell class="my-avatar" @click="avatarSheetVisible = true" title="头像" arrow hover>
       <template #note>
         <t-avatar shape="circle" size="large">
@@ -197,7 +191,7 @@ const onActionSheetSelect = (selectedItem: string) => {
     />
     <t-cell
       title="标签"
-      @click="goEdit('email', '邮箱', user.email)"
+      @click="tagPickerVisible = true"
       :note="user.tags.join('、')"
       arrow
       hover
@@ -257,6 +251,11 @@ const onActionSheetSelect = (selectedItem: string) => {
 </template>
 
 <style lang="less" scoped>
+.user-info {
+  overflow: auto;
+  margin-bottom: 40px;
+  margin-top: 48px;
+}
 .my-avatar {
   --td-avatar-text-large-font-size: 26px;
   //--td-avatar-bg-color: #0052d9;

@@ -12,14 +12,14 @@ instance.interceptors.request.use(
   (config) => {
     // 在发送请求之前做些什么
     Toast.loading({
-      message: '加载中...',
+      message: '请稍后...',
       duration: 0
     })
     // const token = store.getters.token
     // if (token) {
     //   config.headers['Access-Token'] = token
     // }
-    config.headers.platform = 'H5'
+    // config.headers.platform = 'H5'
     return config
   },
   (error) => {
@@ -35,7 +35,7 @@ instance.interceptors.response.use(
     // 对响应数据做点什么
     // axios 会对响应数据多封装一层 data
     const res = response.data
-    if (res.status !== 0) {
+    if (res.code !== 200) {
       Toast(res.message)
       return Promise.reject(res.message)
     } else {

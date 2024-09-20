@@ -2,10 +2,9 @@
 import { computed, type Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { TdTreeSelectProps, TreeSelectValue } from 'tdesign-mobile-vue'
-
 const router = useRouter()
 
-// 原始标签列表,用于获取标签列表的初始值及搜索后的标签列表
+// 原始标签列表,用于获取标签选择器的初始值及搜索后的标签选择器选项
 const originalTagList = [
   {
     label: '年级',
@@ -41,7 +40,7 @@ const originalTagList = [
     ]
   }
 ]
-// 当前（搜索后）显示的标签列表，用于动态渲染树形标签选择器的选项
+// 当前（搜索后）显示的标签列表，用于动态渲染标签选择器的选项
 const tagList = ref(originalTagList)
 // 标签搜索框关键字
 const searchText = ref('')
@@ -62,10 +61,9 @@ const onSearchTags = () => {
     return tempParentTag
   })
 }
-
-// 树形标签选择器中选中的标签的列表，用于渲染已选标签
+// 树形标签选择器中选中的标签的列表，用于渲染已选标签列表
 const selectedTagList: Ref<Array<TreeSelectValue>> = ref(['年级', []])
-// 计算已选标签列表
+// 计算已选标签数组
 const tags = computed(() => {
   return selectedTagList.value[1]
 })

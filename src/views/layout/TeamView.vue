@@ -1,7 +1,12 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div>team</div>
+  <div class="team">team</div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.team {
+  margin-bottom: 40px;
+  margin-top: 48px;
+}
+</style>

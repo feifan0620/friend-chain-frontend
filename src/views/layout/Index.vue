@@ -1,23 +1,37 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
-defineOptions({
-  name: 'LayoutIndex'
-})
-
-// 标签栏当前值
-const tabValue = ref('/home')
-// 标签栏配置项
-const list = ref([
-  { value: '/home', label: '首页', icon: 'home' },
-  { value: '/team', label: '队伍', icon: 'flag-3' },
-  { value: '/user', label: '我的', icon: 'user' }
-])
 
 // 导航栏标题
 const navTitle = ref('友链')
+
+// 标签栏当前值
+const activeTab = ref(window.location.hash.slice(1) || 'home')
+// 标签栏配置项
+const list = ref([
+  { value: 'home', label: '首页', icon: 'home' },
+  { value: 'team', label: '队伍', icon: 'flag-3' },
+  { value: 'user', label: '我的', icon: 'user' }
+])
+
+const changeTab = (activeTab: string) => {
+  switch (activeTab) {
+    case 'home':
+      router.push('/home')
+      navTitle.value = '首页'
+      break
+    case 'team':
+      router.push('/team')
+      navTitle.value = '队伍'
+      break
+    case 'user':
+      router.push('/user')
+      navTitle.value = '我的'
+      break
+  }
+}
 
 // 定义一个标题映射接口，用于存储路径和对应页面标题的键值对
 interface TitleMap {
@@ -27,10 +41,8 @@ interface TitleMap {
 watch(
   () => route.path,
   (newPath) => {
-    // 当路径发生变化时，导航到新的路径
-    router.push(newPath)
     // 更新tab的值为新的路径
-    tabValue.value = newPath
+    activeTab.value = newPath.substring(1)
     // 定义页面标题的路径映射
     const titleMap: TitleMap = {
       '/home': '友链',
@@ -46,21 +58,14 @@ watch(
     }
   },
   {
-    immediate: true, // 立即执行一次监听回调
-    deep: true // 深度监听，适用于值为对象的情况
+    immediate: true // 立即执行一次监听回调
   }
 )
 </script>
 
 <template>
   <!-- 顶部导航栏 -->
-  <t-navbar
-    :title="navTitle"
-    :fixed="false"
-    animation
-    @right-click="router.push('/search')"
-    class="custom-navbar"
-  >
+  <t-navbar :title="navTitle" animation @right-click="router.push('/search')" class="custom-navbar">
     <!-- 导航栏右侧搜索图标 -->
     <template #left>
       <t-icon name="user" size="24px" @click="router.push('/user')" />
@@ -75,7 +80,7 @@ watch(
   <router-view />
 
   <!-- 底部标签栏 -->
-  <t-tab-bar v-model="tabValue" theme="tag" @change="router.push(tabValue)" :split="false">
+  <t-tab-bar theme="tag" :split="false" @change="changeTab" v-model:value="activeTab">
     <t-tab-bar-item v-for="item in list" :key="item.value" :value="item.value">
       {{ item.label }}
       <template #icon>
@@ -90,5 +95,6 @@ watch(
 .custom-navbar {
   --td-navbar-bg-color: #0052d9;
   --td-navbar-color: #fff;
+  z-index: 100;
 }
 </style>
