@@ -56,9 +56,11 @@ const props = defineProps({
 <template>
   <div class="user-item">
     <div class="user-info">
-      <t-avatar class="user-avatar" size="80px" shape="round" :image="props.user.avatarUrl" />
+      <t-avatar shape="round" class="user-avatar" :image="props.user.avatarUrl" size="80px">
+        {{ props.user.username?.substring(0, 1) || '用户' }}
+      </t-avatar>
       <div class="user-info-right">
-        <div class="user-nickname">{{ props.user.username }}</div>
+        <div class="user-nickname">{{ props.user.username || '用户' + props.user.userCode }}</div>
         <div class="user-tags">
           <t-tag variant="light" v-for="tag in props.user.tags" :key="tag">{{ tag }}</t-tag>
         </div>
@@ -73,9 +75,8 @@ const props = defineProps({
 
 <style scoped>
 .user-item {
-  width: 95vw;
+  width: 100%;
   height: 108px;
-  margin: 10px auto;
   padding: 12px;
   display: flex;
   justify-content: space-between;
@@ -122,8 +123,6 @@ const props = defineProps({
   }
   .contact-me-btn {
     align-self: center;
-    position: relative;
-    right: 0px;
   }
 }
 </style>

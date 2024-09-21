@@ -58,7 +58,7 @@ const login = async () => {
         >登录</t-button
       >
       <div class="login-footer">
-        <div class="register">注册</div>
+        <div class="register" @click="router.push('/register')">注册</div>
         <div class="forget-password">忘记密码</div>
       </div>
     </div>
@@ -103,7 +103,7 @@ const login = async () => {
     display: flex;
     justify-content: space-between;
     margin-top: 16px;
-    font-size: 14px;
+    font-size: 15px;
     color: #0052d9;
   }
 }
@@ -112,11 +112,12 @@ const login = async () => {
   position: fixed;
   bottom: 6vh;
   width: 100%;
-  --td-radio-font-size: 16px;
-  --td-radio-label-line-height: 14px;
+  --td-radio-font-size: 17px;
+  --td-radio-label-line-height: 17px;
   --td-radio-icon-size: 18px;
   .t-link {
     display: inline-block;
+    vertical-align: text-top;
   }
 }
 </style>

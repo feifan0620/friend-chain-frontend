@@ -11,6 +11,28 @@ export const getCurrentUser = () => {
 }
 
 /**
+ * @description 用户注册
+ * @param userAccount 账号
+ * @param userPassword 密码
+ * @param checkPassword 确认密码
+ * @param userCode 用户编号
+ * @returns Promise<number>
+ */
+export const userRegister = (
+  userAccount: string,
+  userPassword: string,
+  checkPassword: string,
+  userCode: string
+) => {
+  return request.post('/user/register', {
+    userAccount,
+    userPassword,
+    checkPassword,
+    userCode
+  })
+}
+
+/**
  * @description 用户登录
  * @param userAccount 账号
  * @param userPassword 密码
@@ -21,6 +43,14 @@ export const userLogin = (userAccount: string, userPassword: string) => {
     userAccount,
     userPassword
   })
+}
+
+/**
+ * @description 用户注销
+ * @returns Promise<number>
+ */
+export const userLogout = () => {
+  return request.post('/user/logout')
 }
 
 /**
@@ -42,7 +72,7 @@ export const searchUsersByTags = (tags: string[]) => {
 /**
  * @description 更新用户信息
  * @param userInfo 用户信息
- * @returns Promise<User>
+ * @returns Promise<number>
  */
 export const updateUser = (userInfo: User) => {
   return request.post('/user/update', { ...userInfo })

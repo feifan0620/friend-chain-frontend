@@ -25,8 +25,8 @@ const content = ref([
           <template #label>附近</template>
         </t-tab-panel>
       </t-tabs>
-      <t-list>
-        <UserItem v-for="item in 10" :key="item" />
+      <t-list class="user-list">
+        <UserItem class="user-list-item" v-for="item in 10" :key="item" />
       </t-list>
     </div>
   </div>
@@ -34,7 +34,7 @@ const content = ref([
 
 <style lang="less" scoped>
 .home {
-  margin-bottom: 40px;
+  margin-bottom: 56px;
   margin-top: 48px;
   .search {
     z-index: 100;
@@ -43,6 +43,12 @@ const content = ref([
   .user-list-container {
     height: 100%;
     background-color: #efefef;
+    .user-list {
+      padding: 12px;
+      .user-list-item {
+        margin-bottom: 12px;
+      }
+    }
   }
 }
 </style>

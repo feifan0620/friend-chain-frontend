@@ -6,7 +6,9 @@ import UserView from '@/views/layout/UserView.vue'
 import EditView from '@/views/UserEditView.vue'
 import SearchView from '@/views/SearchView.vue'
 import SearchResult from '@/views/SearchResultView.vue'
-import { Dialog, Toast } from 'tdesign-mobile-vue'
+import UserLoginView from '@/views/UserLoginView.vue'
+import UserRegisterView from '@/views/UserRegisterView.vue'
+import { Toast } from 'tdesign-mobile-vue'
 import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
@@ -25,12 +27,13 @@ const router = createRouter({
     { path: '/search', component: SearchView },
     { path: '/result', component: SearchResult },
     { path: '/edit', component: EditView },
-    { path: '/login', component: () => import('@/views/LoginView.vue') }
+    { path: '/login', component: UserLoginView },
+    { path: '/register', component: UserRegisterView }
   ]
 })
 
 // 需要权限（登录）才能访问的页面
-const authUrl = ['/edit', '/result']
+const authUrl = ['/edit', '/result', '/user']
 
 // 路由守卫
 router.beforeEach((to, from, next) => {

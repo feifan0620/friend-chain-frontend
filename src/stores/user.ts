@@ -9,8 +9,11 @@ export const useUserStore = defineStore(
     const setUserInfo = (newUserInfo: User) => {
       userInfo.value = { ...userInfo.value, ...newUserInfo }
     }
+    const clearUserInfo = () => {
+      userInfo.value = undefined
+    }
     const userId = computed(() => userInfo.value?.id)
-    return { userInfo, setUserInfo, userId }
+    return { userInfo, setUserInfo, userId, clearUserInfo }
   },
   {
     persist: {

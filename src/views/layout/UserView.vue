@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import router from '@/router'
 import { computed, h, ref, type Ref } from 'vue'
-import { InfoCircleFilledIcon } from 'tdesign-icons-vue-next'
+import { InfoCircleFilledIcon, UserIcon } from 'tdesign-icons-vue-next'
 import { useUserStore } from '@/stores/user'
-import { getCurrentUser, updateUser } from '@/api/user'
+import { getCurrentUser, updateUser, userLogout } from '@/api/user'
 import { Toast } from 'tdesign-mobile-vue'
-import qs from 'qs'
+import { TAGS_LISTS } from '@/constans'
+
 const userStore = useUserStore()
 // 用户信息空状态图标
-const userIcon = () => h(InfoCircleFilledIcon)
+const infoCircleFilledIcon = () => h(InfoCircleFilledIcon)
+const userIcon = () => h(UserIcon)
 
 // 当前用户信息
 const user = ref()
@@ -108,46 +110,11 @@ const onGenderConfirm = async () => {
 // 标签选择器状态
 const tagPickerVisible = ref(false)
 // 原始标签列表
-const originalTagList = [
-  {
-    label: '年级',
-    value: '年级',
-    children: [
-      { label: '大一', value: '大一' },
-      { label: '大二', value: '大二' },
-      { label: '大三', value: '大三' },
-      { label: '大四', value: '大四' },
-      { label: '研一', value: '研一' },
-      { label: '研二', value: '研二' },
-      { label: '研三', value: '研三' }
-    ]
-  },
-  {
-    label: '方向',
-    value: '方向',
-    children: [
-      { label: 'Java', value: 'Java' },
-      { label: '前端', value: '前端' },
-      { label: '后端', value: '后端' },
-      { label: 'Linux', value: 'Linux' },
-      { label: '移动端', value: '移动端' },
-      { label: '人工智能', value: '人工智能' },
-      { label: '大数据', value: '大数据' },
-      { label: '云计算', value: '云计算' },
-      { label: '区块链', value: '区块链' },
-      { label: '物联网', value: '物联网' },
-      { label: '游戏开发', value: '游戏开发' },
-      { label: '运维', value: '运维' },
-      { label: '测试', value: '测试' },
-      { label: '产品经理', value: '产品经理' },
-      { label: 'UI设计', value: 'UI设计' }
-    ]
-  }
-]
+const originalTagList = TAGS_LISTS
 // 当前显示（搜索后）的标签列表
 const tagList = ref(originalTagList)
 // 选中标签列表，用于渲染用户标签
-const selectedTagList: Ref<Array<any>> = ref(['年级', JSON.parse(user.value.tags)])
+const selectedTagList: Ref<Array<any>> = ref(['年级', JSON.parse(user.value.tags) || []])
 // 计算已选标签数组
 const selectedTags = computed(() => {
   return selectedTagList.value[1]
@@ -187,23 +154,30 @@ const avatarSheetItems = ['选择图片', '拍照']
 const onActionSheetSelect = (selectedItem: string) => {
   console.log(selectedItem)
 }
+
+const logout = async () => {
+  await userLogout()
+  userStore.clearUserInfo()
+  await router.push('/')
+  Toast.success('退出成功')
+}
 </script>
 
 <template>
   <div class="user-info" v-if="user">
     <!-- 用户信息 -->
-    <t-cell-group bordered class="user-info">
+    <t-cell-group bordered>
       <t-cell class="my-avatar" @click="avatarSheetVisible = true" title="头像" arrow hover>
         <template #note>
           <t-avatar shape="circle" :image="user.avatarUrl" size="large">
-            {{ user.username.substring(0, 1) }}
+            {{ user.username?.substring(0, 1) || '用户' }}
           </t-avatar>
         </template>
       </t-cell>
       <t-cell
         title="昵称"
         @click="goEdit('username', '昵称', user.username)"
-        :note="user.username"
+        :note="user.username || '用户' + user.userCode"
         arrow
         hover
       />
@@ -225,18 +199,18 @@ const onActionSheetSelect = (selectedItem: string) => {
       <t-cell
         title="标签"
         @click="tagPickerVisible = true"
-        :note="JSON.parse(user.tags).join('、')"
+        :note="JSON.parse(user.tags)?.join('、')"
         arrow
         hover
       />
       <t-cell
         title="个人简介"
         @click="goEdit('profile', '个人简介', user.profile as string)"
-        :note="(user.profile as string).substring(0, 10).concat('...')"
+        :note="(user.profile as string)?.substring(0, 10).concat('...')"
         arrow
         hover
       />
-      <t-cell title="加入时间" :note="user.createTime.substring(0, 10)" />
+      <t-cell title="加入时间" :note="user.createTime?.substring(0, 10)" />
       <t-cell title="UID" :note="user.userCode" />
     </t-cell-group>
 
@@ -256,22 +230,19 @@ const onActionSheetSelect = (selectedItem: string) => {
       class="tag-select-popup"
       v-model="tagPickerVisible"
       placement="bottom"
-      style="height: 50vh"
+      style="height: 58vh"
     >
       <div class="header">
         <div class="btn btn--cancel" aria-role="button" @click="tagPickerVisible = false">取消</div>
         <div class="title">选择标签</div>
         <div class="btn btn--confirm" aria-role="button" @click="onTagsConfirm">确定</div>
       </div>
-      <div class="select-tree">
-        <t-tree-select
-          v-model="selectedTagList"
-          :options="tagList"
-          height="50vh"
-          multiple
-          filterable
-        ></t-tree-select>
-      </div>
+      <t-tree-select
+        v-model="selectedTagList"
+        :options="tagList"
+        multiple
+        filterable
+      ></t-tree-select>
     </t-popup>
 
     <!-- 头像选择弹窗 -->
@@ -281,8 +252,11 @@ const onActionSheetSelect = (selectedItem: string) => {
       @selected="onActionSheetSelect"
       @cancel="avatarSheetVisible = false"
     />
+    <t-button class="logout-btn" @click="logout" block size="large" theme="danger"
+      >退出登录</t-button
+    >
   </div>
-  <t-empty v-else class="empty" :icon="userIcon" description="您尚未登录">
+  <t-empty v-else class="empty" :icon="infoCircleFilledIcon" description="您尚未登录">
     <template #action>
       <t-button @click="router.push('/login')" theme="primary" size="large">去登录</t-button>
     </template>
@@ -298,23 +272,29 @@ const onActionSheetSelect = (selectedItem: string) => {
 }
 
 .user-info {
-  margin-bottom: 40px;
-  margin-top: 48px;
-}
-.my-avatar {
-  --td-avatar-text-large-font-size: 26px;
-  //--td-avatar-bg-color: #0052d9;
-  //--td-avatar-content-color: #fff;
+  height: 100vh;
+  padding-bottom: 56px;
+  padding-top: 48px;
+  overflow: auto;
+  .my-avatar {
+    --td-avatar-text-large-font-size: 24px;
+    //--td-avatar-bg-color: #0052d9;
+    //--td-avatar-content-color: #fff;
+  }
+  .logout-btn {
+    width: 90vw;
+    margin: 32px auto;
+  }
 }
 
 // 标签选择弹窗样式
 .tag-select-popup {
+  height: calc(50vh - 56px);
   .header {
     display: flex;
     align-items: center;
     height: 116rpx;
   }
-
   .title {
     flex: 1;
     text-align: center;
