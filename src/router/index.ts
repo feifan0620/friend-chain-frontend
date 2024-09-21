@@ -3,7 +3,7 @@ import LayoutIndex from '@/views/layout/Index.vue'
 import HomeView from '@/views/layout/HomeView.vue'
 import TeamView from '@/views/layout/TeamView.vue'
 import UserView from '@/views/layout/UserView.vue'
-import EditView from '@/views/EditView.vue'
+import EditView from '@/views/UserEditView.vue'
 import SearchView from '@/views/SearchView.vue'
 import SearchResult from '@/views/SearchResultView.vue'
 import { Dialog, Toast } from 'tdesign-mobile-vue'
@@ -49,8 +49,8 @@ router.beforeEach((to, from, next) => {
   if (user) {
     next()
   } else {
-    Toast.error('请先登录')
-    next('/login')
+    Toast('请先登录')
+    next({ path: '/login', query: { redirectUrl: from.fullPath } })
   }
 })
 export default router

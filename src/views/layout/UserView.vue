@@ -1,26 +1,28 @@
 <script setup lang="ts">
 import router from '@/router'
-import { computed, type Ref, ref } from 'vue'
-import type { TreeSelectValue } from 'tdesign-mobile-vue'
+import { computed, h, ref, type Ref } from 'vue'
+import { InfoCircleFilledIcon } from 'tdesign-icons-vue-next'
 import { useUserStore } from '@/stores/user'
-import type { User } from '@/models/user'
+import { getCurrentUser, updateUser } from '@/api/user'
+import { Toast } from 'tdesign-mobile-vue'
+import qs from 'qs'
+const userStore = useUserStore()
+// 用户信息空状态图标
+const userIcon = () => h(InfoCircleFilledIcon)
 
-// 用户信息
-const user = ref({
-  id: 1,
-  username: 'Feifan',
-  userAccount: 'feifan',
-  avatarUrl: 'https://tdesign.gtimg.com/mobile/demos/avatar1.png',
-  gender: 0,
-  userPassword: '12345678',
-  tags: ['大三', 'Java', '大数据'],
-  phone: '13123452345',
-  email: '123456@qq.com',
-  profile: '性格多变的双子男一枚，目前还有头发，阿巴阿巴阿巴，谢谢大家',
-  userCode: '10001',
-  // 时间转换为字符串(不包含时分秒)
-  createTime: new Date().toLocaleDateString()
-})
+// 当前用户信息
+const user = ref()
+
+// 检查用户信息是否已存在于 userStore 中
+if (userStore.userInfo) {
+  // 如果存在，则直接从 userStore 赋值用户信息到响应式状态 user
+  user.value = userStore.userInfo
+} else {
+  // 如果用户信息不存在于 userStore 中，则从服务器获取当前用户信息
+  const { data: currentUserInfo } = await getCurrentUser()
+  // 获取用户信息后，赋值到响应式状态 user
+  user.value = currentUserInfo
+}
 
 /**
  * 跳转到编辑页面的函数
@@ -43,7 +45,7 @@ const goEdit = (editKey: string, editName: string, currentValue: string) => {
 // 性别选择器状态
 const genderState = ref({
   show: false, // 显示选择器状态
-  gender: [user.value.gender] // 当前选中的性别值
+  gender: [user.value?.gender] // 当前选中的性别值
 })
 
 // 性别选择器选项
@@ -65,7 +67,7 @@ const genderOptions = () => {
 }
 
 // 将性别值转换为对应文本
-const genderValueText = computed(() => {
+const genderValue = () => {
   switch (genderState.value.gender[0]) {
     case 0:
       return '男'
@@ -74,19 +76,37 @@ const genderValueText = computed(() => {
     default:
       return '保密'
   }
-})
+}
 
 /**
- * 性别选择器确定按钮点击事件
+ * 确认性别选择的异步函数
+ * 当用户确认性别后，如果所选性别与用户当前性别不同，则更新用户信息中的性别
  */
-const onGenderConfirm = () => {
-  console.log({ gender: genderState.value.gender[0] })
+const onGenderConfirm = async () => {
+  // 检查所选性别是否与用户当前性别不同
+  if (genderState.value.gender[0] !== user.value.gender) {
+    // 更新用户信息中的性别
+    await updateUser({
+      id: userStore.userId as number,
+      gender: genderState.value.gender[0]
+    })
+
+    // 更新应用内用户信息状态
+    userStore.setUserInfo({
+      id: userStore.userId as number,
+      gender: genderState.value.gender[0]
+    })
+
+    // 显示修改成功的提示
+    Toast.success('修改成功')
+  }
+
+  // 关闭性别选择界面
   genderState.value.show = false
 }
 
 // 标签选择器状态
 const tagPickerVisible = ref(false)
-
 // 原始标签列表
 const originalTagList = [
   {
@@ -109,6 +129,7 @@ const originalTagList = [
       { label: 'Java', value: 'Java' },
       { label: '前端', value: '前端' },
       { label: '后端', value: '后端' },
+      { label: 'Linux', value: 'Linux' },
       { label: '移动端', value: '移动端' },
       { label: '人工智能', value: '人工智能' },
       { label: '大数据', value: '大数据' },
@@ -126,19 +147,30 @@ const originalTagList = [
 // 当前显示（搜索后）的标签列表
 const tagList = ref(originalTagList)
 // 选中标签列表，用于渲染用户标签
-const selectedTagList: Ref<Array<TreeSelectValue>> = ref(['年级', user.value.tags])
+const selectedTagList: Ref<Array<any>> = ref(['年级', JSON.parse(user.value.tags)])
+// 计算已选标签数组
+const selectedTags = computed(() => {
+  return selectedTagList.value[1]
+})
 
 /**
  * 确认标签选择操作
  */
-const onTagsConfirm = () => {
+const onTagsConfirm = async () => {
   // 检查当前选中的标签列表与用户已有的标签列表是否相同
   // 如果不相同，才进行更新用户的标签列表的操作
-  if (selectedTagList.value[1] !== user.value.tags) {
-    // 更新用户的标签列表，并断言新标签列表为字符串数组
-    user.value.tags = selectedTagList.value[1] as string[]
-    // 输出更新后的用户标签列表至控制台
-    console.log(user.value.tags)
+  const selectedTags = JSON.stringify(selectedTagList.value[1])
+  if (selectedTags !== user.value.tags) {
+    await updateUser({
+      id: userStore.userId as number,
+      tags: selectedTags as any
+    })
+    useUserStore().setUserInfo({
+      id: userStore.userId as number,
+      tags: selectedTags as any
+    })
+    user.value = userStore.userInfo
+    Toast.success('修改成功')
   }
   // 关闭标签选择器的可见状态，表示用户已完成选择操作
   tagPickerVisible.value = false
@@ -158,101 +190,114 @@ const onActionSheetSelect = (selectedItem: string) => {
 </script>
 
 <template>
-  <!-- 用户信息 -->
-  <t-cell-group bordered class="user-info">
-    <t-cell class="my-avatar" @click="avatarSheetVisible = true" title="头像" arrow hover>
-      <template #note>
-        <t-avatar shape="circle" size="large">
-          {{ user.username.substring(0, 1) }}
-        </t-avatar>
-      </template>
-    </t-cell>
-    <t-cell
-      title="昵称"
-      @click="goEdit('username', '昵称', user.username)"
-      :note="user.username"
-      arrow
-      hover
-    />
-    <t-cell title="性别" @click="genderState.show = true" :note="genderValueText" arrow hover />
-    <t-cell
-      title="手机号"
-      @click="goEdit('phone', '手机号', user.phone)"
-      :note="user.phone"
-      arrow
-      hover
-    />
-    <t-cell
-      title="邮箱"
-      @click="goEdit('email', '邮箱', user.email)"
-      :note="user.email"
-      arrow
-      hover
-    />
-    <t-cell
-      title="标签"
-      @click="tagPickerVisible = true"
-      :note="user.tags.join('、')"
-      arrow
-      hover
-    />
-    <t-cell
-      title="个人简介"
-      @click="goEdit('profile', '个人简介', user.profile)"
-      :note="user.profile.substring(0, 10).concat('...')"
-      arrow
-      hover
-    />
-    <t-cell title="加入时间" :note="user.createTime" />
-    <t-cell title="UID" :note="user.userCode" />
-  </t-cell-group>
+  <div class="user-info" v-if="user">
+    <!-- 用户信息 -->
+    <t-cell-group bordered class="user-info">
+      <t-cell class="my-avatar" @click="avatarSheetVisible = true" title="头像" arrow hover>
+        <template #note>
+          <t-avatar shape="circle" :image="user.avatarUrl" size="large">
+            {{ user.username.substring(0, 1) }}
+          </t-avatar>
+        </template>
+      </t-cell>
+      <t-cell
+        title="昵称"
+        @click="goEdit('username', '昵称', user.username)"
+        :note="user.username"
+        arrow
+        hover
+      />
+      <t-cell title="性别" @click="genderState.show = true" :note="genderValue" arrow hover />
+      <t-cell
+        title="手机号"
+        @click="goEdit('phone', '手机号', user.phone as string)"
+        :note="user.phone"
+        arrow
+        hover
+      />
+      <t-cell
+        title="邮箱"
+        @click="goEdit('email', '邮箱', user.email as string)"
+        :note="user.email"
+        arrow
+        hover
+      />
+      <t-cell
+        title="标签"
+        @click="tagPickerVisible = true"
+        :note="JSON.parse(user.tags).join('、')"
+        arrow
+        hover
+      />
+      <t-cell
+        title="个人简介"
+        @click="goEdit('profile', '个人简介', user.profile as string)"
+        :note="(user.profile as string).substring(0, 10).concat('...')"
+        arrow
+        hover
+      />
+      <t-cell title="加入时间" :note="user.createTime.substring(0, 10)" />
+      <t-cell title="UID" :note="user.userCode" />
+    </t-cell-group>
 
-  <!-- 性别选择器 -->
-  <t-popup class="gender-popup" v-model="genderState.show" placement="bottom">
-    <t-picker
-      v-model="genderState.gender"
-      title="选择性别"
-      @cancel="genderState.show = false"
-      @confirm="onGenderConfirm"
-      :columns="genderOptions"
+    <!-- 性别选择器 -->
+    <t-popup class="gender-popup" v-model="genderState.show" placement="bottom">
+      <t-picker
+        v-model="genderState.gender"
+        title="选择性别"
+        @cancel="genderState.show = false"
+        @confirm="onGenderConfirm"
+        :columns="genderOptions"
+      />
+    </t-popup>
+
+    <!-- 标签选择器 -->
+    <t-popup
+      class="tag-select-popup"
+      v-model="tagPickerVisible"
+      placement="bottom"
+      style="height: 50vh"
+    >
+      <div class="header">
+        <div class="btn btn--cancel" aria-role="button" @click="tagPickerVisible = false">取消</div>
+        <div class="title">选择标签</div>
+        <div class="btn btn--confirm" aria-role="button" @click="onTagsConfirm">确定</div>
+      </div>
+      <div class="select-tree">
+        <t-tree-select
+          v-model="selectedTagList"
+          :options="tagList"
+          height="50vh"
+          multiple
+          filterable
+        ></t-tree-select>
+      </div>
+    </t-popup>
+
+    <!-- 头像选择弹窗 -->
+    <t-action-sheet
+      v-model="avatarSheetVisible"
+      :items="avatarSheetItems"
+      @selected="onActionSheetSelect"
+      @cancel="avatarSheetVisible = false"
     />
-  </t-popup>
-
-  <!-- 标签选择器 -->
-  <t-popup
-    class="tag-select-popup"
-    v-model="tagPickerVisible"
-    placement="bottom"
-    style="height: 50vh"
-  >
-    <div class="header">
-      <div class="btn btn--cancel" aria-role="button" @click="tagPickerVisible = false">取消</div>
-      <div class="title">选择标签</div>
-      <div class="btn btn--confirm" aria-role="button" @click="onTagsConfirm">确定</div>
-    </div>
-    <div class="select-tree">
-      <t-tree-select
-        v-model="selectedTagList"
-        :options="tagList"
-        height="50vh"
-        multiple
-        filterable
-      ></t-tree-select>
-    </div>
-  </t-popup>
-
-  <!-- 头像选择弹窗 -->
-  <t-action-sheet
-    v-model="avatarSheetVisible"
-    :items="avatarSheetItems"
-    @selected="onActionSheetSelect"
-    @cancel="avatarSheetVisible = false"
-  />
+  </div>
+  <t-empty v-else class="empty" :icon="userIcon" description="您尚未登录">
+    <template #action>
+      <t-button @click="router.push('/login')" theme="primary" size="large">去登录</t-button>
+    </template>
+  </t-empty>
 </template>
 
 <style lang="less" scoped>
+.empty {
+  height: 100vh;
+  padding-bottom: 40px;
+  padding-top: 20vh;
+  background-color: #efefef;
+}
+
 .user-info {
-  overflow: auto;
   margin-bottom: 40px;
   margin-top: 48px;
 }

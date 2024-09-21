@@ -27,11 +27,10 @@ const login = async () => {
   }
   // 登录逻辑
   const { data: user } = await userLogin(userAccount.value, userPassword.value)
-  console.log(user)
-  await userStore.setUserInfo(user)
+  userStore.setUserInfo(user)
   // 登录成功后返回首页/上一页并给用户提示
-  // const url = route.query.redirectUrl || '/'
-  router.go(-1)
+  const url = route.query.redirectUrl || '/'
+  await router.replace(url as string)
   Toast.success('登录成功')
 }
 </script>

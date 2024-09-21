@@ -26,7 +26,7 @@ const content = ref([
         </t-tab-panel>
       </t-tabs>
       <t-list>
-        <UserItem />
+        <UserItem v-for="item in 10" :key="item" />
       </t-list>
     </div>
   </div>

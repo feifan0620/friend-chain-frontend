@@ -1,15 +1,16 @@
 import { defineStore } from 'pinia'
 import type { User } from '@/models/user'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const useUserStore = defineStore(
   'user',
   () => {
     const userInfo = ref<User>()
-    const setUserInfo = async (user: User) => {
-      userInfo.value = user
+    const setUserInfo = (newUserInfo: User) => {
+      userInfo.value = { ...userInfo.value, ...newUserInfo }
     }
-    return { userInfo, setUserInfo }
+    const userId = computed(() => userInfo.value?.id)
+    return { userInfo, setUserInfo, userId }
   },
   {
     persist: {

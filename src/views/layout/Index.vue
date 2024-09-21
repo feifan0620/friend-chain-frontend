@@ -77,7 +77,9 @@ watch(
   </t-navbar>
 
   <!-- 根据路由路径显示不同的页面（首页、队伍、我的）-->
-  <router-view />
+  <Suspense>
+    <router-view />
+  </Suspense>
 
   <!-- 底部标签栏 -->
   <t-tab-bar theme="tag" :split="false" @change="changeTab" v-model:value="activeTab">

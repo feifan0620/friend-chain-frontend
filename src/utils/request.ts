@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { Toast } from 'tdesign-mobile-vue'
-import qs from 'qs'
+import { useRoute, useRouter } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
 
 // 新建自定义 axios 实例
 const instance = axios.create({
@@ -8,12 +10,15 @@ const instance = axios.create({
   timeout: 5000
 })
 
+// 携带请求凭证(cookie)
+instance.defaults.withCredentials = true
+
 // 添加请求拦截器
 instance.interceptors.request.use(
   (config) => {
     // 在发送请求之前做些什么
     Toast.loading({
-      message: '请稍后...',
+      message: '请稍候...',
       duration: 0
     })
     // const token = store.getters.token
@@ -31,13 +36,21 @@ instance.interceptors.request.use(
 
 // 添加响应拦截器
 instance.interceptors.response.use(
-  function (response) {
+  async (response) => {
     // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
     // axios 会对响应数据多封装一层 data
     const res = response.data
     if (res.code !== 200) {
-      Toast(res.message)
+      Toast.error(res.message)
+      if (res.code === 40100) {
+        await router.replace({
+          path: '/login',
+          query: {
+            redirect: route.fullPath
+          }
+        })
+      }
       return Promise.reject(res.message)
     } else {
       Toast.clear()

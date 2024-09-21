@@ -64,7 +64,7 @@ const onSearchTags = () => {
 // 树形标签选择器中选中的标签的列表，用于渲染已选标签列表
 const selectedTagList: Ref<Array<TreeSelectValue>> = ref(['年级', []])
 // 计算已选标签数组
-const tags = computed(() => {
+const selectedTags = computed(() => {
   return selectedTagList.value[1]
 })
 
@@ -79,7 +79,7 @@ function onClickClose(index: string | number) {
 
 // 树形标签选择器选择状态改变监听事件，该值与标签选择器中的值双向绑定
 const onChange: TdTreeSelectProps['onChange'] = (itemValue: TreeSelectValue) => {
-  console.log(tags.value)
+  console.log(selectedTags.value)
 }
 
 const onUserSearch = () => {
@@ -87,7 +87,7 @@ const onUserSearch = () => {
   router.push({
     path: '/result',
     query: {
-      tags: tags.value as string[]
+      tags: selectedTags.value as string[]
     }
   })
 }

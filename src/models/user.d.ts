@@ -3,7 +3,7 @@
  */
 export type User = {
   id: number
-  username: string
+  username?: string
   userAccount?: string
   avatarUrl?: string
   gender?: number

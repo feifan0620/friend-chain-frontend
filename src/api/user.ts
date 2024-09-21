@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import qs from 'qs'
+import type { User } from '@/models/user'
 
 /**
  * @description 获取当前用户信息
@@ -36,4 +37,13 @@ export const searchUsersByTags = (tags: string[]) => {
       return qs.stringify(params, { indices: false })
     }
   })
+}
+
+/**
+ * @description 更新用户信息
+ * @param userInfo 用户信息
+ * @returns Promise<User>
+ */
+export const updateUser = (userInfo: User) => {
+  return request.post('/user/update', { ...userInfo })
 }

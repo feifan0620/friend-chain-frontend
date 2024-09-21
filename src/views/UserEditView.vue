@@ -2,42 +2,64 @@
 import { useRoute, useRouter } from 'vue-router'
 import { type Ref, ref } from 'vue'
 import { Toast } from 'tdesign-mobile-vue'
+import { useUserStore } from '@/stores/user'
+import { updateUser } from '@/api/user'
 
 const router = useRouter()
 const route = useRoute()
-// 保存按钮可以状态
+
+const userStore = useUserStore()
+
+// 保存按钮可用状态
 const saveDisabled = ref(true)
 
+// 当前修改用户信息的值
 const currentValue: Ref<String> = ref(route.query.currentValue as string)
+// 当前修改用户信息的键
 const editKey: string = route.query.editKey as string
+// 当前修改用户信息的名称
 const editName: string = route.query.editName as string
-const onSave = () => {
-  if (editKey === 'username' && currentValue.value === '') {
+/**
+ * 点击保存按钮的函数
+ * 更新服务器用户信息及当前用户状态
+ */
+const onSave = async () => {
+  if (currentValue.value === '') {
     Toast(`${editName}不能为空`)
     return
   }
   switch (editKey) {
-    case 'username':
-      console.log({ username: currentValue.value })
-      break
     case 'phone':
       if (!currentValue.value.match(/^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/)) {
         Toast('请输入正确的手机号')
         return
       }
-      console.log({ phone: currentValue.value })
       break
     case 'email':
       if (!currentValue.value.match(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/)) {
         Toast('请输入正确的邮箱')
         return
       }
-      console.log({ email: currentValue.value })
-      break
-    case 'profile':
-      console.log({ profile: currentValue.value })
       break
   }
+
+  // 更新服务器用户信息，将 editKey 对应的值更改为用户输入的值
+  await updateUser({
+    id: userStore.userId as number,
+    [editKey]: currentValue.value
+  })
+
+  // 更新用户信息状态，将 editKey 对应的值更改为用户输入的值
+  userStore.setUserInfo({
+    id: userStore.userId as number,
+    [editKey]: currentValue.value
+  })
+
+  // 弹出修改成功的提示
+  Toast.success('修改成功')
+
+  // 返回上一页
+  router.back()
 }
 </script>
 
@@ -56,9 +78,9 @@ const onSave = () => {
   <t-textarea
     v-if="editKey === 'profile'"
     maxlength="36"
-    @focus="saveDisabled = false"
+    @change="saveDisabled = false"
     indicator
-    class="textarea-example"
+    class="textarea-profile"
     placeholder="请输入您的个人简介"
     v-model:value.trim="currentValue"
   ></t-textarea>
@@ -93,9 +115,9 @@ const onSave = () => {
     width: 90vw;
     margin: 18px auto;
     //--td-input-bg-color: #efefef;
-    --td-input-vertical-padding: 8px;
+    --td-input-vertical-padding: 4px;
     border-bottom: 1px solid #0052d9;
-    --td-font-size-m: 20px;
+    --td-font-size-m: 16px;
   }
   .user-name-tip {
     width: 90vw;
@@ -103,7 +125,7 @@ const onSave = () => {
     color: #999;
   }
 }
-.textarea-example {
+.textarea-profile {
   height: 30vh;
 }
 </style>
