@@ -73,7 +73,7 @@ const register = async () => {
     <t-navbar title="用户注册" :fixed="false" left-arrow @left-click="router.back()" />
     <div class="register-container">
       <h1 class="welcome-title">欢迎来到友链</h1>
-      <div class="sub-title">寻找志同道合的伙伴</div>
+      <div class="sub-title">携手共进，成就彼此</div>
       <t-input
         class="user-name-input"
         v-model="userAccount"

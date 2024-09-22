@@ -27,8 +27,8 @@ onMounted(async () => {
   <t-navbar class="search" title="伙伴匹配" left-arrow @left-click="router.back()" />
 
   <div class="user-list-container">
-    <t-list v-if="userList.length > 0">
-      <UserItem v-for="user in userList" :key="user.id" :user="user" />
+    <t-list class="user-list" v-if="userList.length > 0">
+      <UserItem class="user-list-item" v-for="user in userList" :key="user.id" :user="user" />
     </t-list>
 
     <t-empty
@@ -51,6 +51,13 @@ onMounted(async () => {
   height: calc(100vh - 48px);
   background-color: #f3f3f3;
   position: relative;
+  .user-list {
+    padding: 12px;
+    .user-list-item {
+      margin-bottom: 12px;
+    }
+  }
+
   .empty {
     position: absolute;
     top: 50%;
