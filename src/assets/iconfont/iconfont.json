@@ -1,0 +1,23 @@
+{
+  "id": "4691612",
+  "name": "友链",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "13769347",
+      "name": "性别-男",
+      "font_class": "xingbie-nan",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "13769358",
+      "name": "性别-女",
+      "font_class": "xingbie-nv",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    }
+  ]
+}

@@ -24,7 +24,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <t-navbar class="search" title="伙伴匹配" left-arrow @left-click="router.back()" />
+  <t-navbar class="search" title="用户匹配" left-arrow @left-click="router.back()" />
 
   <div class="user-list-container">
     <t-list class="user-list" v-if="userList.length > 0">
@@ -54,6 +54,7 @@ onMounted(async () => {
   .user-list {
     padding: 12px;
     .user-list-item {
+      border-radius: 8px;
       margin-bottom: 12px;
     }
   }

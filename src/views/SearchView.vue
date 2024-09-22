@@ -119,7 +119,7 @@ const onUserSearch = () => {
       theme="primary"
       @click="onUserSearch"
     >
-      匹配用户
+      搜索匹配用户
     </t-button>
     <div class="summary">标签选择</div>
     <t-tree-select
@@ -154,7 +154,7 @@ const onUserSearch = () => {
 // 已选标签列表区域
 .selected-tag {
   padding: 16px;
-  height: 40vh;
+  height: 32vh;
   overflow: auto;
   // 每列标签上外边距
   .tag {

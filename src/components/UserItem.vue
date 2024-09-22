@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import type { User } from '@/models/user'
 import { Dialog } from 'tdesign-mobile-vue'
+import Index from '@/views/layout/Index.vue'
 
 const props = defineProps({
   user: {
     type: Object as () => User,
-    default: {}
+    default: {} as User
+  },
+  id: {
+    type: Number,
+    default: 1
   }
 })
 
 const contactMe = () => {
   Dialog.confirm({
     title: '提示',
-    content: '该功能暂未实现，请通过其他方式联系',
+    content: '该功能暂未实现',
     confirmBtn: '确定'
   })
 }
@@ -22,15 +27,23 @@ const contactMe = () => {
   <div class="user-item">
     <div class="user-info">
       <t-avatar shape="round" class="user-avatar" :image="props.user.avatarUrl" size="80px">
-        {{ props.user.username?.substring(0, 1) || '用户' }}
+        {{ props.user.username?.substring(0, 2) || '用户' }}
       </t-avatar>
       <div class="user-info-right">
-        <div class="user-nickname">{{ props.user.username || '用户' + props.user.userCode }}</div>
+        <div class="user-nickname">{{ props.user.username || '用户' + id }}</div>
         <div class="user-tags">
+          <t-tag v-if="props.user.gender === 0 || props.user.gender === 1" variant="light">
+            {{ props.user.gender === 0 ? '男' : '女' }}
+            <span
+              :class="
+                props.user.gender === 0 ? 'iconfont icon-xingbie-nan' : 'iconfont icon-xingbie-nv'
+              "
+            />
+          </t-tag>
           <t-tag variant="light" v-for="tag in props.user.tags" :key="tag">{{ tag }}</t-tag>
         </div>
         <div class="user-desc">
-          <span>{{ props.user.profile || ' 暂无简介' }}</span>
+          <span>{{ props.user.profile || '' }}</span>
         </div>
       </div>
     </div>
@@ -48,7 +61,7 @@ const contactMe = () => {
   background-color: #fff;
   position: relative;
   .user-info {
-    width: calc(100% - 78px);
+    width: calc(100% - 68px);
     display: flex;
     .user-avatar {
       margin-right: 8px;
@@ -63,9 +76,10 @@ const contactMe = () => {
       .user-nickname {
         font-size: 16px;
         font-weight: 600;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
       }
       .user-tags {
+        flex: 1;
         margin-bottom: 6px;
         overflow: hidden; /* 隐藏超出容器的内容 */
         white-space: nowrap;
@@ -75,6 +89,14 @@ const contactMe = () => {
           margin-right: 4px;
           font-size: 10px;
           color: #999999;
+          .icon-xingbie-nan {
+            color: #0052d9;
+            font-size: 10px;
+          }
+          .icon-xingbie-nv {
+            color: #ff4d4f;
+            font-size: 10px;
+          }
         }
       }
       .user-desc {
