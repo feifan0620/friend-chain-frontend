@@ -10,6 +10,7 @@ import UserLoginView from '@/views/UserLoginView.vue'
 import UserRegisterView from '@/views/UserRegisterView.vue'
 import { Toast } from 'tdesign-mobile-vue'
 import { useUserStore } from '@/stores/user'
+import { getCurrentUser } from '@/api/user'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,9 +37,9 @@ const router = createRouter({
 const authUrl = ['/edit', '/result', '/user']
 
 // 路由守卫
-router.beforeEach((to, from, next) => {
-  const userStore = useUserStore()
-  const user = userStore.userInfo
+router.beforeEach(async (to, from, next) => {
+  const res = await getCurrentUser()
+  const user = res.data
   if (user && to.path === '/login') {
     next('/')
     return

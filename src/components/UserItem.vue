@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import type { User } from '@/models/user'
 import { Dialog } from 'tdesign-mobile-vue'
-import Index from '@/views/layout/Index.vue'
 
 const props = defineProps({
   user: {
     type: Object as () => User,
     default: {} as User
-  },
-  id: {
-    type: Number,
-    default: 1
   }
 })
 
@@ -30,7 +25,7 @@ const contactMe = () => {
         {{ props.user.username?.substring(0, 2) || '用户' }}
       </t-avatar>
       <div class="user-info-right">
-        <div class="user-nickname">{{ props.user.username || '用户' + id }}</div>
+        <div class="user-nickname">{{ props.user.username || '用户' }}</div>
         <div class="user-tags">
           <t-tag v-if="props.user.gender === 0 || props.user.gender === 1" variant="light">
             {{ props.user.gender === 0 ? '男' : '女' }}
@@ -43,7 +38,7 @@ const contactMe = () => {
           <t-tag variant="light" v-for="tag in props.user.tags" :key="tag">{{ tag }}</t-tag>
         </div>
         <div class="user-desc">
-          <span>{{ props.user.profile || '' }}</span>
+          <span>{{ props.user.profile || '这个人很神秘' }}</span>
         </div>
       </div>
     </div>

@@ -64,32 +64,39 @@ watch(
 </script>
 
 <template>
-  <!-- 顶部导航栏 -->
-  <t-navbar :title="navTitle" animation @right-click="router.push('/search')" class="custom-navbar">
-    <!-- 导航栏右侧搜索图标 -->
-    <template #left>
-      <t-icon name="user" size="24px" @click="router.push('/user')" />
-    </template>
-    <!-- 导航栏左侧用户图标 -->
-    <template #right>
-      <t-icon name="search" size="24px" />
-    </template>
-  </t-navbar>
-
-  <!-- 根据路由路径显示不同的页面（首页、队伍、我的）-->
-  <Suspense>
-    <router-view />
-  </Suspense>
-
-  <!-- 底部标签栏 -->
-  <t-tab-bar theme="tag" :split="false" @change="changeTab" v-model:value="activeTab">
-    <t-tab-bar-item v-for="item in list" :key="item.value" :value="item.value">
-      {{ item.label }}
-      <template #icon>
-        <t-icon :name="item.icon" />
+  <div class="layout">
+    <!-- 顶部导航栏 -->
+    <t-navbar
+      :title="navTitle"
+      animation
+      @right-click="router.push('/search')"
+      class="custom-navbar"
+    >
+      <!-- 导航栏右侧搜索图标 -->
+      <template #left>
+        <t-icon name="user" size="24px" @click="router.push('/user')" />
       </template>
-    </t-tab-bar-item>
-  </t-tab-bar>
+      <!-- 导航栏左侧用户图标 -->
+      <template #right>
+        <t-icon name="search" size="24px" />
+      </template>
+    </t-navbar>
+
+    <!-- 根据路由路径显示不同的页面（首页、队伍、我的）-->
+    <Suspense>
+      <router-view />
+    </Suspense>
+
+    <!-- 底部标签栏 -->
+    <t-tab-bar theme="tag" :split="false" @change="changeTab" v-model:value="activeTab">
+      <t-tab-bar-item v-for="item in list" :key="item.value" :value="item.value">
+        {{ item.label }}
+        <template #icon>
+          <t-icon :name="item.icon" />
+        </template>
+      </t-tab-bar-item>
+    </t-tab-bar>
+  </div>
 </template>
 
 <style lang="less" scoped>

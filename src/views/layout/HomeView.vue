@@ -1,61 +1,48 @@
 <script setup lang="ts">
 import UserItem from '@/components/UserItem.vue'
 import { onMounted, ref } from 'vue'
+import { recommendUsers } from '@/api/user'
+import type { User } from '@/models/user'
 
-const MAX_DATA_LEN = 30
+const MAX_DATA_LEN = 60
+const ONCE_LOAD_NUM = 10
 
-const loadData = (data: any, isRefresh?: Boolean) => {
-  const ONCE_LOAD_NUM = 10
+let pageNum = 1
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const temp = []
-      for (let i = 0; i < ONCE_LOAD_NUM; i++) {
-        if (isRefresh) {
-          temp.push(`${i + 1}`)
-        } else {
-          temp.push(`${data.value.length + 1 + i}`)
-        }
-      }
+const loadData = async (data: any) => {
+  const res = (await recommendUsers(ONCE_LOAD_NUM, pageNum)) as any
 
-      if (isRefresh) {
-        data.value = temp
-      } else {
-        data.value.push(...temp)
-      }
+  const userList = res.data.records
 
-      resolve(data)
-    }, 1000)
+  userList.map((item: User) => {
+    return (item.tags = JSON.parse(item.tags as any))
   })
+
+  data.value.push(...userList)
+  pageNum++
 }
 
-const listPull = ref([] as Array<any>)
+const userList = ref([] as Array<User>)
 const loading = ref('')
-const refreshing = ref(false)
 
-const onLoadPull = (isRefresh?: Boolean) => {
-  if ((listPull.value.length >= MAX_DATA_LEN && !isRefresh) || loading.value) {
+const onLoadPull = () => {
+  if (userList.value.length >= MAX_DATA_LEN || loading.value) {
     return
   }
   loading.value = 'loading'
-  loadData(listPull, isRefresh).then(() => {
+  loadData(userList).then(() => {
     loading.value = ''
-    refreshing.value = false
   })
 }
 
 const onScroll = (scrollBottom: number) => {
-  if (scrollBottom < 50) {
+  if (scrollBottom < 10) {
     onLoadPull()
   }
 }
 
-const onRefresh = () => {
-  refreshing.value = true
-  onLoadPull(true)
-}
-
 onMounted(() => {
+  userList.value = []
   onLoadPull()
 })
 const content = ref([
@@ -72,10 +59,6 @@ const swiperList = [
 
 const handleSwiperClick = (value: number) => {
   console.log('click: ', value)
-}
-
-const onClick = () => {
-  props.container().scrollTo(0, 1200)
 }
 </script>
 
@@ -105,38 +88,53 @@ const onClick = () => {
         </t-tab-panel>
       </t-tabs>
 
-      <t-pull-down-refresh v-model="refreshing" @refresh="onRefresh">
-        <t-list class="user-list" :async-loading="loading" @scroll="onScroll">
-          <UserItem class="user-list-item" v-for="item in listPull" :key="item" :id="item" />
-        </t-list>
-      </t-pull-down-refresh>
+      <t-list class="user-list" :async-loading="loading" @scroll="onScroll">
+        <UserItem class="user-list-item" v-for="item in userList" :key="item.id" :user="item" />
+        <t-back-top />
+      </t-list>
     </div>
   </div>
 </template>
 
 <style lang="less" scoped>
 .home {
-  margin-bottom: 56px;
-  margin-top: 48px;
+  padding-bottom: 72px;
+  padding-top: 48px;
   background-color: #efefef;
   .search {
     z-index: 100;
   }
   .banner {
-    --td-swiper-border-radius: 8px;
-    padding: 12px;
+    --td-swiper-border-radius: 0px;
     .img {
       width: 100%;
       height: 100%;
     }
   }
-  .tabs {
-    background-color: red;
-  }
+  //.card {
+  //  padding: 12px;
+  //  width: 100%;
+  //  height: 120px;
+  //  display: flex;
+  //  justify-content: space-between;
+  //  .join {
+  //    width: 45%;
+  //    height: 90%;
+  //    border-radius: 10px;
+  //    color: #fff;
+  //    background: radial-gradient(circle at top right, rgba(10, 213, 126, 0.6) 0%, #0ad57e 80%);
+  //  }
+  //  .create {
+  //    width: 45%;
+  //    height: 90%;
+  //    background: radial-gradient(circle at top right, rgba(60, 126, 254, 0.6) 0%, #3c7efe 80%);
+  //    border-radius: 10px;
+  //    color: #fff;
+  //  }
+  //}
   .user-list {
     width: 95%;
     margin: 12px auto;
-    background-color: #efefef;
     .user-list-item {
       margin-top: 12px;
       border-radius: 8px;

@@ -77,3 +77,15 @@ export const searchUsersByTags = (tags: string[]) => {
 export const updateUser = (userInfo: User) => {
   return request.post('/user/update', { ...userInfo })
 }
+
+/**
+ * @description 获取推荐用户
+ * @param pageSize 每页数量
+ * @param pageNum 页码
+ * @returns Promise<User[]>
+ */
+export const recommendUsers = (pageSize: number, pageNum: number) => {
+  return request.get('/user/recommend', {
+    params: { pageSize, pageNum }
+  })
+}

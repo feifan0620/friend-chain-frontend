@@ -41,8 +41,7 @@ instance.interceptors.response.use(
     // 对响应数据做点什么
     // axios 会对响应数据多封装一层 data
     const res = response.data
-    console.log(res)
-    if (res.code !== 200) {
+    if (res.code !== 200 && res.code !== 40100) {
       if (res.description) {
         Toast.error(res.description)
         return Promise.reject(res.description)
