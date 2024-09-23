@@ -89,3 +89,14 @@ export const recommendUsers = (pageSize: number, pageNum: number) => {
     params: { pageSize, pageNum }
   })
 }
+
+/**
+ * @description 获取最匹配用户
+ * @param num 匹配用户数量
+ * @returns Promise<User[]>
+ */
+export const getMatchUser = (num: number) => {
+  return request.get('/user/match', {
+    params: { num }
+  })
+}

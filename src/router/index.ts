@@ -8,9 +8,9 @@ import SearchView from '@/views/SearchView.vue'
 import SearchResult from '@/views/SearchResultView.vue'
 import UserLoginView from '@/views/UserLoginView.vue'
 import UserRegisterView from '@/views/UserRegisterView.vue'
+import TeamAddView from '@/views/TeamAddView.vue'
 import { Toast } from 'tdesign-mobile-vue'
 import { useUserStore } from '@/stores/user'
-import { getCurrentUser } from '@/api/user'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,21 +25,22 @@ const router = createRouter({
         { path: '/user', component: UserView }
       ]
     },
-    { path: '/search', component: SearchView },
-    { path: '/result', component: SearchResult },
-    { path: '/edit', component: EditView },
+    { path: '/user/search', component: SearchView },
+    { path: '/user/result', component: SearchResult },
+    { path: '/user/edit', component: EditView },
+    { path: '/team/add', component: TeamAddView },
     { path: '/login', component: UserLoginView },
     { path: '/register', component: UserRegisterView }
   ]
 })
 
 // 需要权限（登录）才能访问的页面
-const authUrl = ['/edit', '/result', '/user']
+const authUrl = ['/user/edit', '/user/result', '/user']
 
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
-  const res = await getCurrentUser()
-  const user = res.data
+  const userStore = useUserStore()
+  const user = userStore.userInfo
   if (user && to.path === '/login') {
     next('/')
     return

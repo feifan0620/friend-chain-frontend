@@ -24,7 +24,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <t-navbar class="search" title="用户匹配" left-arrow @left-click="router.back()" />
+  <t-navbar class="search-navbar" title="用户匹配" left-arrow @left-click="router.back()" />
 
   <div class="user-list-container">
     <t-list class="user-list" v-if="userList.length > 0">
@@ -41,7 +41,8 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="less">
-.search {
+.search-navbar {
+  --td-navbar-bg-color: #f5f7fc;
   z-index: 100;
 }
 

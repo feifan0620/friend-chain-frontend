@@ -85,7 +85,7 @@ const contactMe = () => {
           font-size: 10px;
           color: #999999;
           .icon-xingbie-nan {
-            color: #0052d9;
+            color: #16a9fa;
             font-size: 10px;
           }
           .icon-xingbie-nv {

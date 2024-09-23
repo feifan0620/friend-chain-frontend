@@ -6,6 +6,12 @@ export const useUserStore = defineStore(
   'user',
   () => {
     const userInfo = ref<User>()
+    // 推荐用户列表
+    const recommendUsers = ref<User[]>([])
+    // 设置推荐用户列表
+    const setRecommendUsers = (newRecommendUsers: User[]) => {
+      recommendUsers.value = newRecommendUsers
+    }
     const setUserInfo = (newUserInfo: User) => {
       userInfo.value = { ...userInfo.value, ...newUserInfo }
     }
@@ -13,7 +19,14 @@ export const useUserStore = defineStore(
       userInfo.value = undefined
     }
     const userId = computed(() => userInfo.value?.id)
-    return { userInfo, setUserInfo, userId, clearUserInfo }
+    return {
+      userInfo,
+      recommendUsers,
+      userId,
+      setUserInfo,
+      setRecommendUsers,
+      clearUserInfo
+    }
   },
   {
     persist: {

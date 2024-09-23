@@ -132,7 +132,7 @@ const register = async () => {
     color: #999999;
   }
   .t-input {
-    --td-input-bg-color: #efefef;
+    --td-input-bg-color: #f3f3f3;
     --td-input-border-radius: 10px;
     --td-input-vertical-padding: 10px;
     border-radius: 10px;

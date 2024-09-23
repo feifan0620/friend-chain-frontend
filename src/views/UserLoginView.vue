@@ -27,6 +27,9 @@ const login = async () => {
   }
   // 登录逻辑
   const { data: user } = await userLogin(userAccount.value, userPassword.value)
+  if (user.tags) {
+    user.tags = JSON.parse(user.tags)
+  }
   userStore.setUserInfo(user)
   // 登录成功后返回首页/上一页并给用户提示
   const url = route.query.redirectUrl || '/'
@@ -84,7 +87,7 @@ const login = async () => {
     color: #999999;
   }
   .t-input {
-    --td-input-bg-color: #efefef;
+    --td-input-bg-color: #f3f3f3;
     --td-input-border-radius: 10px;
     --td-input-vertical-padding: 10px;
     border-radius: 10px;

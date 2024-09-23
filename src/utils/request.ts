@@ -36,12 +36,12 @@ instance.interceptors.request.use(
 
 // 添加响应拦截器
 instance.interceptors.response.use(
-  function (response) {
+  async function (response) {
     // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
     // axios 会对响应数据多封装一层 data
     const res = response.data
-    if (res.code !== 200 && res.code !== 40100) {
+    if (res.code !== 200) {
       if (res.description) {
         Toast.error(res.description)
         return Promise.reject(res.description)

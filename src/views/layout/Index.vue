@@ -69,7 +69,7 @@ watch(
     <t-navbar
       :title="navTitle"
       animation
-      @right-click="router.push('/search')"
+      @right-click="router.push('/user/search')"
       class="custom-navbar"
     >
       <!-- 导航栏右侧搜索图标 -->

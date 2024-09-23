@@ -66,7 +66,7 @@ watch(
 const onUserSearch = () => {
   // 跳转到用户列表页面，并携带已选标签列表
   router.push({
-    path: '/result',
+    path: '/user/result',
     query: {
       tags: selectedTags.value as string[]
     }
@@ -76,7 +76,7 @@ const onUserSearch = () => {
 
 <template>
   <!-- 顶部导航栏 -->
-  <t-navbar class="search" :fixed="false" @right-click="router.push('/')">
+  <t-navbar class="search-navbar" :fixed="false" @right-click="router.push('/')">
     <!-- 左侧搜索框区域 -->
     <template #left>
       <t-search
@@ -139,7 +139,8 @@ const onUserSearch = () => {
 @margin-top: 14px;
 
 // 顶部导航栏
-.search {
+.search-navbar {
+  --td-navbar-bg-color: #f5f7fc;
   // 搜索框右侧返回首页图标
   .t-icon-home {
     margin-right: 8px;

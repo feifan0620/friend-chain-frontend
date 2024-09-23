@@ -65,7 +65,13 @@ const onSave = async () => {
 
 <template>
   <!-- 导航栏 -->
-  <t-navbar :fixed="false" @left-click="router.back()" left-arrow :title="'修改' + editName">
+  <t-navbar
+    class="user-edit-navbar"
+    :fixed="false"
+    @left-click="router.back()"
+    left-arrow
+    :title="'修改' + editName"
+  >
     <!-- 保存按钮 -->
     <template #right>
       <t-button class="save" size="small" @click="onSave" :disabled="saveDisabled" theme="primary"
@@ -106,6 +112,9 @@ const onSave = async () => {
 </template>
 
 <style scoped lang="less">
+.user-edit-navbar {
+  --td-navbar-bg-color: #f5f7fc;
+}
 .save {
   margin-right: 6px;
 }

@@ -3,7 +3,7 @@ import router from '@/router'
 import { computed, h, ref, type Ref } from 'vue'
 import { InfoCircleFilledIcon, UserIcon } from 'tdesign-icons-vue-next'
 import { useUserStore } from '@/stores/user'
-import { getCurrentUser, updateUser, userLogout } from '@/api/user'
+import { updateUser, userLogout } from '@/api/user'
 import { Toast } from 'tdesign-mobile-vue'
 import { TAGS_LISTS } from '@/constans'
 
@@ -15,16 +15,7 @@ const userIcon = () => h(UserIcon)
 // 当前用户信息
 const user = ref()
 
-// 检查用户信息是否已存在于 userStore 中
-if (userStore.userInfo) {
-  // 如果存在，则直接从 userStore 赋值用户信息到响应式状态 user
-  user.value = userStore.userInfo
-} else {
-  // 如果用户信息不存在于 userStore 中，则从服务器获取当前用户信息
-  const { data: currentUserInfo } = await getCurrentUser()
-  // 获取用户信息后，赋值到响应式状态 user
-  user.value = currentUserInfo
-}
+user.value = userStore.userInfo
 
 /**
  * 跳转到编辑页面的函数
@@ -35,7 +26,7 @@ if (userStore.userInfo) {
  */
 const goEdit = (editKey: string, editName: string, currentValue: string) => {
   router.push({
-    path: '/edit',
+    path: '/user/edit',
     query: {
       editKey,
       editName,
@@ -114,7 +105,7 @@ const originalTagList = TAGS_LISTS
 // 当前显示（搜索后）的标签列表
 const tagList = ref(originalTagList)
 // 选中标签列表，用于渲染用户标签
-const selectedTagList: Ref<Array<any>> = ref(['年级', JSON.parse(user.value.tags) || []])
+const selectedTagList: Ref<Array<any>> = ref(['年级', user.value.tags || []])
 // 计算已选标签数组
 const selectedTags = computed(() => {
   return selectedTagList.value[1]
@@ -199,7 +190,7 @@ const logout = async () => {
       <t-cell
         title="标签"
         @click="tagPickerVisible = true"
-        :note="JSON.parse(user.tags)?.join('、')"
+        :note="user.tags?.join('、')"
         arrow
         hover
       />
