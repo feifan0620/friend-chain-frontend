@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { defineProps, onMounted, reactive, ref, toRefs } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { addTeam } from '@/api/team'
+import { type Team } from '@/models/team'
+import type { SubmitContext } from 'tdesign-mobile-vue'
 
 const router = useRouter()
-
-const props = defineProps({
-  disabled: Boolean
-})
-const { disabled } = toRefs(props)
 
 // upload
 const onFail = ({ file, e }: { file: any; e: ProgressEvent }): any => {
@@ -42,21 +40,24 @@ const files = ref([
   }
 ])
 
-const formData = reactive({
+// 表单数据
+// @ts-ignore
+const formData: Team = reactive({
   name: '',
   description: '',
-  expireTime: '',
+  expireTime: null,
   maxNum: 3,
-  status: '',
-  password: '',
-  photo: files
+  status: '0',
+  password: ''
 })
+
 const form = ref(null)
 
 const groupChangeFn = (value: any, context: { e: Event }) => {
   console.log(value, context)
 }
 
+// 时间选择器
 const visible = ref(false)
 const onChange = (value: string) => {
   console.log('change: ', value)
@@ -73,6 +74,7 @@ const onCancel = () => {
 
 const onConfirm = (value: string) => {
   console.log('confirm: ', value)
+  // @ts-ignore
   formData.expireTime = value
   visible.value = false
 }
@@ -83,20 +85,28 @@ const onChangeStepper = ($event: number) => {
 }
 
 // form
-const onReset = () => {
-  console.log('===onReset')
+
+const onSubmit = async (context: SubmitContext<FormData>) => {
+  if (context.validateResult === true) {
+    const teamData = {
+      ...formData,
+      status: Number(formData.status),
+      expireTime: new Date(formData.expireTime)
+    }
+
+    await addTeam(teamData)
+  }
 }
 
-const onSubmit = (e: any) => {
-  console.log('===onSubmit', e)
-}
-
+// 表单字段校验规则
 const rules = {
-  name: [{ validator: (val: any) => val !== '', message: '不能为空' }],
-  status: [{ validator: (val: any) => val !== '', message: '不能为空' }],
+  name: [
+    { validator: (val: any) => val.length <= 5, message: '不能超过5位' },
+    { validator: (val: any) => val !== '', message: '不能为空' }
+  ],
+  description: [{ validator: (val: any) => val !== '', message: '不能为空' }],
   expireTime: [{ validator: (val: any) => val !== '', message: '不能为空' }],
-  place: [{ validator: (val: any) => val !== '', message: '不能为空' }],
-  description: [{ validator: (val: any) => val !== '', message: '不能为空' }]
+  status: [{ validator: (val: any) => val !== '', message: '不能为空' }]
 }
 
 onMounted(() => {
@@ -121,15 +131,12 @@ onMounted(() => {
       reset-type="initial"
       show-error-message
       label-align="left"
-      :disabled="disabled"
       scroll-to-first-error="auto"
-      @reset="onReset"
       @submit="onSubmit"
     >
       <t-form-item label="队伍图片" name="photo">
         <t-upload
           class="upload"
-          :default-files="formData.photo"
           :max="1"
           :action="action"
           :on-fail="onFail"
@@ -158,6 +165,7 @@ onMounted(() => {
         <t-input
           v-model="formData.expireTime"
           borderless
+          readonly
           align="right"
           placeholder="请选择时间"
           @click="visible = true"
@@ -165,10 +173,10 @@ onMounted(() => {
         <t-popup v-model="visible" placement="bottom">
           <t-date-time-picker
             :value="formData.expireTime"
-            :mode="['date']"
+            :mode="['date', 'minute']"
             title="选择日期"
-            start="2024-1-1"
-            format="YYYY-MM-DD"
+            :start="new Date()"
+            format="YYYY-MM-DD HH:mm:ss"
             @change="onChange"
             @pick="onPick"
             @confirm="onConfirm"
@@ -177,14 +185,33 @@ onMounted(() => {
         </t-popup>
       </t-form-item>
       <t-form-item label="最大人数" name="maxNum" content-align="right">
-        <t-stepper v-model="formData.maxNum" theme="filled" @change="onChangeStepper" />
+        <t-stepper
+          v-model="formData.maxNum"
+          min="2"
+          max="10"
+          theme="filled"
+          @change="onChangeStepper"
+        />
       </t-form-item>
       <t-form-item label="队伍状态" name="status">
         <t-radio-group v-model="formData.status" class="box" borderless @change="groupChangeFn">
-          <t-radio :block="false" name="radio" value="1" label="公开" />
+          <t-radio :block="false" name="radio" value="0" label="公开" />
           <t-radio :block="false" name="radio" value="1" label="私有" />
           <t-radio :block="false" name="radio" value="2" label="加密" />
         </t-radio-group>
+      </t-form-item>
+      <t-form-item label="密码" name="password" v-show="(formData.status as any) === '2'">
+        <t-input
+          v-model="formData.password"
+          borderless
+          type="password"
+          :clearable="false"
+          placeholder="请输入密码"
+        >
+          <template #suffixIcon>
+            <BrowseOffIcon />
+          </template>
+        </t-input>
       </t-form-item>
       <div class="button-group">
         <t-button theme="primary" type="submit" size="large">创建</t-button>
@@ -198,16 +225,10 @@ onMounted(() => {
 .team-add-navbar {
   --td-navbar-bg-color: #f5f7fc;
 }
-t-form-item[name='photo'] {
-}
-
 .box {
   width: 100%;
   display: flex;
   justify-content: space-between;
-}
-.upload {
-  --td-upload-grid-columns: 3;
 }
 .textarea {
   height: 100px;

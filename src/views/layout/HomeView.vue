@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import UserItem from '@/components/UserItem.vue'
-import { h, onMounted, ref } from 'vue'
+import { h, onMounted, type Ref, ref } from 'vue'
 import { getMatchUser, recommendUsers } from '@/api/user'
 import type { User } from '@/models/user'
 import { InfoCircleFilledIcon } from 'tdesign-icons-vue-next'
@@ -16,7 +16,7 @@ let ONCE_LOAD_NUM = 10
 let pageNum = 1
 
 // 用户列表数据
-const userList = ref([] as Array<User>)
+const userList: Ref<Array<User>> = ref([] as Array<User>)
 // 加载状态
 const loading = ref('')
 
@@ -91,11 +91,11 @@ const content = ref([
 ])
 // 轮播图数据
 const swiperList = [
-  'src/assets/acm.png',
-  'src/assets/MAKERS游戏开发大赛.jpg',
-  'src/assets/华为开发者大赛.jpg',
-  'src/assets/智能交互创新赛.jpg',
-  'src/assets/蓝桥杯.jpg'
+  'src/assets/acm.webp',
+  'src/assets/MAKERS游戏开发大赛.webp',
+  'src/assets/华为开发者大赛.webp',
+  'src/assets/智能交互创新赛.webp',
+  'src/assets/蓝桥杯.webp'
 ]
 
 const handleSwiperClick = (value: number) => {
@@ -182,7 +182,7 @@ const onSwitchChange = async () => {
     }
   }
   .match-user {
-    height: 50px;
+    height: 55px;
   }
   //.card {
   //  padding: 12px;
@@ -206,14 +206,12 @@ const onSwitchChange = async () => {
   //  }
   //}
   .user-list-container {
+    padding: 12px;
     min-height: calc(74vh - 202px);
     position: relative;
     .user-list {
-      width: 95%;
-      margin: 12px auto;
-      padding-bottom: 16px;
       .user-list-item {
-        margin-top: 12px;
+        margin-bottom: 12px;
         border-radius: 8px;
       }
     }

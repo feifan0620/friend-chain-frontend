@@ -1,19 +1,45 @@
 <script lang="ts" setup>
-import { h } from 'vue'
+import { h, onMounted, type Ref } from 'vue'
 import { AddIcon } from 'tdesign-icons-vue-next'
 import { IconFont } from 'tdesign-icons-vue-next'
+import { getTeamList } from '@/api/team'
 import { ref } from 'vue'
-import teamItem from '@/components/TeamItem.vue'
 import router from '@/router'
-const isShowDialog = ref(false)
-
+// @ts-ignore
+import TeamItem from '@/components/TeamItem.vue'
+import type { Team } from '@/models/team'
+import moment from 'moment'
 const iconFunc = () => h(AddIcon, { size: '24px' })
+
+const teamList: Ref<Array<Team>> = ref() as Ref<Array<Team>>
+
+const getTeamData = async (searchValue = '', status = 0) => {
+  const res = await getTeamList({
+    searchText: searchValue,
+    status: status
+  })
+  teamList.value = res.data
+  teamList.value.map((item) => {
+    if (item.expireTime) {
+      // @ts-ignore
+      return (item.expireTime = moment(new Date(item.expireTime)).format('YYYY-MM-DD HH:mm'))
+    }
+  })
+}
+
+onMounted(() => {
+  getTeamData()
+})
+const teamSearchValue = ref('')
+const onTeamSearch = () => {
+  console.log('teamSearchValue', teamSearchValue.value)
+}
 </script>
 
 <template>
   <div class="team">
     <div class="team-tab-bar">
-      <t-tabs default-value="first">
+      <t-tabs default-value="first" size="large">
         <t-tab-panel value="first">
           <template #label>
             <div class="label-content">
@@ -32,54 +58,62 @@ const iconFunc = () => h(AddIcon, { size: '24px' })
         </t-tab-panel>
       </t-tabs>
     </div>
-    <team-item v-for="item in 10"></team-item>
-    <!--<t-empty-->
-    <!--  class="empty"-->
-    <!--  image="https://tdesign.gtimg.com/mobile/demos/empty1.png"-->
-    <!--  description="暂无可加入队伍"-->
-    <!--/>-->
+    <div class="team-search">
+      <t-search
+        v-model="teamSearchValue"
+        placeholder="请输入队伍关键字"
+        @submit="onTeamSearch"
+      ></t-search>
+    </div>
+    <div v-if="teamList?.length > 0" class="team-list">
+      <TeamItem v-for="item in teamList" :key="item.id" :teamInfo="item"></TeamItem>
+    </div>
+    <t-empty
+      v-else
+      class="empty"
+      image="https://tdesign.gtimg.com/mobile/demos/empty1.png"
+      description="暂无可加入队伍"
+    />
     <t-fab
       :icon="iconFunc"
       :draggable="false"
-      style="right: 24px; bottom: 80px"
+      style="right: 20px; bottom: 68px"
       @click="router.push('/team/add')"
     />
-    <t-dialog
-      v-model:visible="isShowDialog"
-      close-on-overlay-click
-      title="新建队伍"
-      :cancel-btn="cancelBtn"
-      :confirm-btn="confirmBtn"
-      @confirm="onConfirm"
-      @cancel="onCancel"
-    >
-      <t-input placeholder="请输入队伍名称" />
-    </t-dialog>
   </div>
 </template>
 
 <style scoped>
 .team {
-  height: calc(100vh - 88px);
   background-color: #f3f3f3;
-  margin-bottom: 40px;
-  margin-top: 48px;
+  padding-bottom: 95px;
+  padding-top: 48px;
   position: relative;
-  .t-tabs {
-    margin-bottom: 16px;
-  }
+  min-height: 100vh;
   .team-tab-bar {
-    width: 100%;
-  }
-
-  .label-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    span {
-      margin-left: 3px;
+    width: 100vw;
+    z-index: 100;
+    top: 96px;
+    position: fixed;
+    .label-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      span {
+        margin-left: 3px;
+      }
     }
+  }
+  .team-list {
+    padding-top: 96px;
+  }
+  .team-search {
+    z-index: 100;
+    width: 100vw;
+    position: fixed;
+    top: 48px;
+    background-color: #fff;
+    padding: 8px 16px;
   }
   .empty {
     position: absolute;

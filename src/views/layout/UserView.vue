@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import router from '@/router'
 import { computed, h, ref, type Ref } from 'vue'
-import { InfoCircleFilledIcon, UserIcon } from 'tdesign-icons-vue-next'
 import { useUserStore } from '@/stores/user'
 import { updateUser, userLogout } from '@/api/user'
 import { Toast } from 'tdesign-mobile-vue'
 import { TAGS_LISTS } from '@/constans'
 
 const userStore = useUserStore()
-// 用户信息空状态图标
-const infoCircleFilledIcon = () => h(InfoCircleFilledIcon)
-const userIcon = () => h(UserIcon)
 
 // 当前用户信息
 const user = ref()
@@ -125,7 +121,7 @@ const onTagsConfirm = async () => {
     })
     useUserStore().setUserInfo({
       id: userStore.userId as number,
-      tags: selectedTags as any
+      tags: JSON.parse(selectedTags as any)
     })
     user.value = userStore.userInfo
     Toast.success('修改成功')
@@ -247,11 +243,6 @@ const logout = async () => {
       >退出登录</t-button
     >
   </div>
-  <t-empty v-else class="empty" :icon="infoCircleFilledIcon" description="您尚未登录">
-    <template #action>
-      <t-button @click="router.push('/login')" theme="primary" size="large">去登录</t-button>
-    </template>
-  </t-empty>
 </template>
 
 <style lang="less" scoped>

@@ -1,8 +1,6 @@
 import axios from 'axios'
 import { Toast } from 'tdesign-mobile-vue'
-import { useRoute, useRouter } from 'vue-router'
-const router = useRouter()
-const route = useRoute()
+import { useUserStore } from '@/stores/user'
 
 // 新建自定义 axios 实例
 const instance = axios.create({
@@ -42,6 +40,10 @@ instance.interceptors.response.use(
     // axios 会对响应数据多封装一层 data
     const res = response.data
     if (res.code !== 200) {
+      if (res.code === 40100 && res.code === 40101) {
+        const userStore = useUserStore()
+        userStore.clearUserInfo()
+      }
       if (res.description) {
         Toast.error(res.description)
         return Promise.reject(res.description)

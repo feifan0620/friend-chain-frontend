@@ -1,19 +1,39 @@
+<script lang="ts" setup>
+import type { Team } from '@/models/team'
+import { teamStatusEnum } from '@/constans/team'
+defineProps({
+  teamInfo: {
+    type: Object as () => Team,
+    default: {} as Team
+  }
+})
+</script>
+
 <template>
   <div class="team-card">
     <div class="card-content">
-      <t-image :src="teamImage" alt="队伍图片" class="team-image" />
+      <t-image
+        size="large"
+        fit="cover"
+        src="src/assets/天命人.webp"
+        alt="队伍图片"
+        class="team-image"
+      />
       <div class="team-info">
         <span class="team-name">
-          {{ teamName }}
-          <t-tag variant="light-outline" size="small" theme="danger">加密</t-tag>
+          {{ teamInfo.name }}
+          <t-tag variant="light" size="small" :theme="teamInfo.status === 0 ? 'success' : 'danger'">
+            {{ teamStatusEnum[teamInfo.status] }}
+          </t-tag>
         </span>
-        <span class="team-description">{{ teamDescription }}</span>
+        <span class="team-description">{{ teamInfo.description }}</span>
         <span class="team-members">
           <t-icon size="14px" name="usergroup"></t-icon>
-          {{ 1 }}/{{ 5 }}
+          {{ teamInfo.hasJoinNum }}/{{ teamInfo.maxNum }}
         </span>
         <span class="team-timestamp">
-          <t-icon size="14px" name="time"></t-icon> {{ deadline }}
+          <t-icon size="14px" name="time"></t-icon>
+          {{ teamInfo.expireTime }}
         </span>
       </div>
     </div>
@@ -21,24 +41,19 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      teamImage: 'src/assets/成龙攻沙.png',
-      teamName: '精英战队',
-      teamDescription: '今晚一起来攻沙',
-      teamStatus: '加密',
-      createdAt: '2023-04-01',
-      deadline: '2023-12-31'
-    }
-  }
-}
-</script>
-
 <style lang="less" scoped>
+//.team-card::before {
+//  content: '';
+//  background-color: rgba(255, 255, 255, 0.8);
+//  width: 100%;
+//  height: 100%;
+//  position: absolute;
+//  left: 0;
+//  top: 0;
+//}
 .team-card {
-  background: linear-gradient(-45deg, #e7e7ee, #96baea);
+  position: relative;
+  background: #fff;
   height: 140px;
   width: 95vw;
   margin: 12px auto;
@@ -52,9 +67,9 @@ export default {
     align-items: center;
     .team-image {
       width: 100px;
-      height: 100px;
+      height: 100%;
       border-radius: 5px;
-      margin-right: 14px;
+      margin-right: 12px;
     }
 
     .team-info {
@@ -66,36 +81,34 @@ export default {
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 5px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        line-height: 18px;
+        //display: flex;
+        //justify-content: space-between;
+        //align-items: center;
       }
-
       .team-description {
-        font-size: 14px;
-        color: #666;
-        margin-bottom: 10px;
         flex: 1;
+        font-size: 14px;
+        line-height: 18px;
+        width: calc(100% - 5px);
+        color: #666;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        text-overflow: ellipsis;
+        white-space: normal;
       }
-
-      .team-members {
-        font-size: 12px;
-        color: #999;
-        line-height: 14px;
-        .t-icon {
-          vertical-align: bottom;
-          line-height: 14px;
-        }
-      }
-
+      .team-members,
       .team-timestamp {
-        font-size: 12px;
         color: #999;
-        line-height: 14px;
+        font-size: 12px;
+        line-height: 12px;
         margin-top: 8px;
+        display: flex;
+        align-items: center;
         .t-icon {
-          vertical-align: bottom;
-          line-height: 14px;
+          margin-right: 4px;
         }
       }
     }
@@ -103,10 +116,9 @@ export default {
 
   .join-button {
     align-self: end;
-    margin-left: 20px;
-    background-color: #1890ff;
+    margin-left: 10px;
+    --td-button-default-bg-color: #1890ff;
     color: #fff;
-    border-radius: 5px;
   }
 }
 </style>

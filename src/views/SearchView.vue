@@ -140,7 +140,6 @@ const onUserSearch = () => {
 
 // 顶部导航栏
 .search-navbar {
-  --td-navbar-bg-color: #f5f7fc;
   // 搜索框右侧返回首页图标
   .t-icon-home {
     margin-right: 8px;
