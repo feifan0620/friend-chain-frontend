@@ -3,7 +3,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { addTeam } from '@/api/team'
 import { type Team } from '@/models/team'
-import type { SubmitContext } from 'tdesign-mobile-vue'
+import { type SubmitContext, Toast } from 'tdesign-mobile-vue'
 
 const router = useRouter()
 
@@ -93,15 +93,16 @@ const onSubmit = async (context: SubmitContext<FormData>) => {
       status: Number(formData.status),
       expireTime: new Date(formData.expireTime)
     }
-
     await addTeam(teamData)
+    await router.replace('/team')
+    Toast.success('创建成功')
   }
 }
 
 // 表单字段校验规则
 const rules = {
   name: [
-    { validator: (val: any) => val.length <= 5, message: '不能超过5位' },
+    { validator: (val: any) => val.length <= 5, message: '名称不能超过5位' },
     { validator: (val: any) => val !== '', message: '不能为空' }
   ],
   description: [{ validator: (val: any) => val !== '', message: '不能为空' }],
@@ -119,7 +120,7 @@ onMounted(() => {
   <div class="team-add">
     <t-navbar
       class="team-add-navbar"
-      title="创建房间"
+      title="创建队伍"
       :fixed="false"
       left-arrow
       @left-click="router.back()"

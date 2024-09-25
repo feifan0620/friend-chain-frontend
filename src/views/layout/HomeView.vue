@@ -41,7 +41,7 @@ const loadData = async (data: any) => {
     // 将处理后的用户列表存储到用户商店的推荐用户列表中
     userStore.setRecommendUsers(userList)
   }
-  // 将用户商店中的推荐用户列表添加到数据对象的推荐用户列表中
+  // 将用户 store (缓存)中的推荐用户列表添加到数据对象的推荐用户列表中
   data.value.push(...userStore.recommendUsers)
   // 递增页码，用于下一次加载更多数据
   pageNum++
@@ -58,7 +58,7 @@ const onLoadPull = () => {
   if (userList.value.length >= MAX_DATA_LEN || loading.value) {
     return
   }
-  // 设置加载状态指示符，防止重复加载（节流）
+  // 设置加载状态指示符，防止重复加载
   loading.value = 'loading'
   // 调用加载数据函数，并在加载完成后重置加载状态
   loadData(userList).then(() => {

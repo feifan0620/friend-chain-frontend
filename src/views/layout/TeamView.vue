@@ -13,9 +13,20 @@ const iconFunc = () => h(AddIcon, { size: '24px' })
 
 const teamList: Ref<Array<Team>> = ref() as Ref<Array<Team>>
 
+const tabValue = ref('public')
+
+const onTabValueChange = (val: string) => {
+  if (val === 'encrypt') {
+    getTeamData(teamSearchValue.value, 2)
+  } else {
+    getTeamData(teamSearchValue.value)
+  }
+}
+
 const getTeamData = async (searchValue = '', status = 0) => {
   const res = await getTeamList({
     searchText: searchValue,
+    pageNum: 1,
     status: status
   })
   teamList.value = res.data
@@ -32,15 +43,19 @@ onMounted(() => {
 })
 const teamSearchValue = ref('')
 const onTeamSearch = () => {
-  console.log('teamSearchValue', teamSearchValue.value)
+  if (tabValue.value === 'public') {
+    getTeamData(teamSearchValue.value)
+  } else {
+    getTeamData(teamSearchValue.value)
+  }
 }
 </script>
 
 <template>
   <div class="team">
     <div class="team-tab-bar">
-      <t-tabs default-value="first" size="large">
-        <t-tab-panel value="first">
+      <t-tabs size="large" v-model="tabValue" @change="onTabValueChange">
+        <t-tab-panel value="public">
           <template #label>
             <div class="label-content">
               <icon-font name="usergroup-add" size="large" />
@@ -48,7 +63,7 @@ const onTeamSearch = () => {
             </div>
           </template>
         </t-tab-panel>
-        <t-tab-panel value="second">
+        <t-tab-panel value="encrypt">
           <template #label>
             <div class="label-content">
               <icon-font name="lock-on" size="large" />
@@ -60,7 +75,7 @@ const onTeamSearch = () => {
     </div>
     <div class="team-search">
       <t-search
-        v-model="teamSearchValue"
+        v-model.trim="teamSearchValue"
         placeholder="请输入队伍关键字"
         @submit="onTeamSearch"
       ></t-search>

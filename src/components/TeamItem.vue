@@ -1,12 +1,51 @@
 <script lang="ts" setup>
 import type { Team } from '@/models/team'
 import { teamStatusEnum } from '@/constans/team'
-defineProps({
+import { ref } from 'vue'
+import { Toast } from 'tdesign-mobile-vue'
+import { joinTeam } from '@/api/team'
+
+const props = defineProps({
   teamInfo: {
     type: Object as () => Team,
     default: {} as Team
   }
 })
+
+const confirmBtn = {
+  content: '确认',
+  variant: 'text',
+  size: 'large'
+}
+const cancelBtn = {
+  content: '取消',
+  variant: 'text',
+  size: 'large'
+}
+
+const isShowDialog = ref(false)
+
+const password = ref('')
+
+const onConfirm = async () => {
+  if (props.teamInfo.status === 0) {
+    await joinTeam(props.teamInfo.id)
+    Toast.success('加入成功')
+  } else {
+    joinTeam(props.teamInfo.id, password.value)
+      .then(() => {
+        Toast.success('加入成功')
+      })
+      .catch((err) => {
+        if (err === '用户已加入该队伍') {
+          Toast.error(err.substring(2))
+        }
+      })
+      .finally(() => {
+        password.value = ''
+      })
+  }
+}
 </script>
 
 <template>
@@ -37,8 +76,20 @@ defineProps({
         </span>
       </div>
     </div>
-    <t-button size="extra-small" class="join-button">加入队伍</t-button>
+    <t-button size="extra-small" class="join-button" @click="isShowDialog = true"
+      >加入队伍</t-button
+    >
   </div>
+  <t-dialog
+    v-model:visible="isShowDialog"
+    :title="teamInfo.status === 0 ? '提示' : '该队伍已加密'"
+    :cancel-btn="cancelBtn"
+    :confirm-btn="confirmBtn"
+    @confirm="onConfirm"
+  >
+    <t-input v-if="teamInfo.status === 2" v-model="password" placeholder="请输入密码" />
+    <span v-else>确定要加入该队伍吗？</span>
+  </t-dialog>
 </template>
 
 <style lang="less" scoped>
@@ -120,5 +171,11 @@ defineProps({
     --td-button-default-bg-color: #1890ff;
     color: #fff;
   }
+}
+.t-input {
+  margin-top: 16px;
+  --td-input-vertical-padding: 12px;
+  --td-bg-color-container: var(--td-bg-color-page, #f3f3f3);
+  border-radius: 6px;
 }
 </style>
