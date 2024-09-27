@@ -89,7 +89,6 @@ const onGenderConfirm = async () => {
     // 显示修改成功的提示
     Toast.success('修改成功')
   }
-
   // 关闭性别选择界面
   genderState.value.show = false
 }
@@ -124,6 +123,7 @@ const onTagsConfirm = async () => {
       tags: userTags as any
     })
     user.value = userStore.userInfo
+
     Toast.success('修改成功')
   }
   // 关闭标签选择器的可见状态，表示用户已完成选择操作
