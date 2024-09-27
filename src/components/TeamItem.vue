@@ -61,7 +61,11 @@ const onConfirm = async () => {
       <div class="team-info">
         <span class="team-name">
           {{ teamInfo.name }}
-          <t-tag variant="light" size="small" :theme="teamInfo.status === 0 ? 'success' : 'danger'">
+          <t-tag
+            variant="light"
+            size="small"
+            :theme="teamInfo.status === 0 ? 'success' : 'danger'"
+          >
             {{ teamStatusEnum[teamInfo.status] }}
           </t-tag>
         </span>
@@ -76,7 +80,10 @@ const onConfirm = async () => {
         </span>
       </div>
     </div>
-    <t-button size="extra-small" class="join-button" @click="isShowDialog = true"
+    <t-button
+      size="extra-small"
+      class="join-button"
+      @click="isShowDialog = true"
       >加入队伍</t-button
     >
   </div>
@@ -87,7 +94,11 @@ const onConfirm = async () => {
     :confirm-btn="confirmBtn"
     @confirm="onConfirm"
   >
-    <t-input v-if="teamInfo.status === 2" v-model="password" placeholder="请输入密码" />
+    <t-input
+      v-if="teamInfo.status === 2"
+      v-model="password"
+      placeholder="请输入密码"
+    />
     <span v-else>确定要加入该队伍吗？</span>
   </t-dialog>
 </template>

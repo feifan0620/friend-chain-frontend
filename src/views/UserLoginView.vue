@@ -40,7 +40,12 @@ const login = async () => {
 
 <template>
   <div class="login">
-    <t-navbar title="用户登录" :fixed="false" left-arrow @left-click="router.go(-1)" />
+    <t-navbar
+      title="用户登录"
+      :fixed="false"
+      left-arrow
+      @left-click="router.go(-1)"
+    />
     <div class="login-container">
       <h1 class="welcome-title">欢迎来到友链</h1>
       <div class="sub-title">携手共进，成就彼此</div>
@@ -57,7 +62,12 @@ const login = async () => {
         placeholder="请输入登录密码"
         type="password"
       />
-      <t-button class="login-btn" @click="login" :disabled="!loginAvailable" theme="primary" block
+      <t-button
+        class="login-btn"
+        @click="login"
+        :disabled="!loginAvailable"
+        theme="primary"
+        block
         >登录</t-button
       >
       <div class="login-footer">
@@ -66,8 +76,15 @@ const login = async () => {
       </div>
     </div>
     <div class="agreement">
-      <t-radio allowUncheck label="已阅读并同意" :block="false" v-model:checked="isAgree" />
-      <t-link hover size="large" theme="primary" href="#">《友链用户协议》</t-link>
+      <t-radio
+        allowUncheck
+        label="已阅读并同意"
+        :block="false"
+        v-model:checked="isAgree"
+      />
+      <t-link hover size="large" theme="primary" href="#"
+        >《友链用户协议》</t-link
+      >
     </div>
   </div>
 </template>

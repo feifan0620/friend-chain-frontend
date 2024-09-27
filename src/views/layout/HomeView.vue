@@ -38,10 +38,10 @@ const loadData = async (data: any) => {
         return (item.tags = JSON.parse(item.tags as any))
       }
     })
-    // 将处理后的用户列表存储到用户商店的推荐用户列表中
+    // 将处理后的用户列表存储到用户 store 的推荐用户列表中
     userStore.setRecommendUsers(userList)
   }
-  // 将用户 store (缓存)中的推荐用户列表添加到数据对象的推荐用户列表中
+  // 将用户 store (缓存)中的推荐用户列表添加到数据对象中
   data.value.push(...userStore.recommendUsers)
   // 递增页码，用于下一次加载更多数据
   pageNum++
@@ -129,8 +129,17 @@ const onSwitchChange = async () => {
 <template>
   <div class="home">
     <div class="banner">
-      <t-swiper :navigation="{ type: 'dots' }" interval="3000" autoplay @click="handleSwiperClick">
-        <t-swiper-item v-for="(item, index) in swiperList" :key="index" style="height: 26vh">
+      <t-swiper
+        :navigation="{ type: 'dots' }"
+        interval="3000"
+        autoplay
+        @click="handleSwiperClick"
+      >
+        <t-swiper-item
+          v-for="(item, index) in swiperList"
+          :key="index"
+          style="height: 26vh"
+        >
           <img :src="item" class="img" />
         </t-swiper-item>
       </t-swiper>
@@ -152,7 +161,12 @@ const onSwitchChange = async () => {
         :async-loading="loading"
         @scroll="onScroll"
       >
-        <UserItem class="user-list-item" v-for="item in userList" :key="item.id" :user="item" />
+        <UserItem
+          class="user-list-item"
+          v-for="item in userList"
+          :key="item.id"
+          :user="item"
+        />
         <t-back-top />
       </t-list>
       <t-empty

@@ -33,7 +33,9 @@ const getTeamData = async (searchValue = '', status = 0) => {
   teamList.value.map((item) => {
     if (item.expireTime) {
       // @ts-ignore
-      return (item.expireTime = moment(new Date(item.expireTime)).format('YYYY-MM-DD HH:mm'))
+      return (item.expireTime = moment(new Date(item.expireTime)).format(
+        'YYYY-MM-DD HH:mm'
+      ))
     }
   })
 }
@@ -81,7 +83,11 @@ const onTeamSearch = () => {
       ></t-search>
     </div>
     <div v-if="teamList?.length > 0" class="team-list">
-      <TeamItem v-for="item in teamList" :key="item.id" :teamInfo="item"></TeamItem>
+      <TeamItem
+        v-for="item in teamList"
+        :key="item.id"
+        :teamInfo="item"
+      ></TeamItem>
     </div>
     <t-empty
       v-else

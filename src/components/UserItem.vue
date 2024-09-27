@@ -21,28 +21,46 @@ const contactMe = () => {
 <template>
   <div class="user-item">
     <div class="user-info">
-      <t-avatar shape="round" class="user-avatar" :image="props.user.avatarUrl" size="80px">
+      <t-avatar
+        shape="round"
+        class="user-avatar"
+        :image="props.user.avatarUrl"
+        size="80px"
+      >
         {{ props.user.username?.substring(0, 2) || '用户' }}
       </t-avatar>
       <div class="user-info-right">
         <div class="user-nickname">{{ props.user.username || '用户' }}</div>
         <div class="user-tags">
-          <t-tag v-if="props.user.gender === 0 || props.user.gender === 1" variant="light">
+          <t-tag
+            v-if="props.user.gender === 0 || props.user.gender === 1"
+            variant="light"
+          >
             {{ props.user.gender === 0 ? '男' : '女' }}
             <span
               :class="
-                props.user.gender === 0 ? 'iconfont icon-xingbie-nan' : 'iconfont icon-xingbie-nv'
+                props.user.gender === 0
+                  ? 'iconfont icon-xingbie-nan'
+                  : 'iconfont icon-xingbie-nv'
               "
             />
           </t-tag>
-          <t-tag variant="light" v-for="tag in props.user.tags" :key="tag">{{ tag }}</t-tag>
+          <t-tag variant="light" v-for="tag in props.user.tags" :key="tag">{{
+            tag
+          }}</t-tag>
         </div>
         <div class="user-desc">
           <span>{{ props.user.profile || '这个人很神秘' }}</span>
         </div>
       </div>
     </div>
-    <t-button size="small" theme="light" class="contact-me-btn" @click="contactMe">联系我</t-button>
+    <t-button
+      size="small"
+      theme="light"
+      class="contact-me-btn"
+      @click="contactMe"
+      >联系我</t-button
+    >
   </div>
 </template>
 

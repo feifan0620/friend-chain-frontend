@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from '@/router'
-import { computed, h, ref, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { updateUser, userLogout } from '@/api/user'
 import { Toast } from 'tdesign-mobile-vue'
@@ -113,15 +113,15 @@ const selectedTags = computed(() => {
 const onTagsConfirm = async () => {
   // 检查当前选中的标签列表与用户已有的标签列表是否相同
   // 如果不相同，才进行更新用户的标签列表的操作
-  const selectedTags = JSON.stringify(selectedTagList.value[1])
-  if (selectedTags !== user.value.tags) {
+  const userTags = JSON.stringify(selectedTags)
+  if (userTags !== user.value.tags) {
     await updateUser({
       id: userStore.userId as number,
-      tags: selectedTags as any
+      tags: userTags as any
     })
     useUserStore().setUserInfo({
       id: userStore.userId as number,
-      tags: JSON.parse(selectedTags as any)
+      tags: userTags as any
     })
     user.value = userStore.userInfo
     Toast.success('修改成功')
@@ -154,7 +154,13 @@ const logout = async () => {
   <div class="user-info" v-if="user">
     <!-- 用户信息 -->
     <t-cell-group bordered>
-      <t-cell class="my-avatar" @click="avatarSheetVisible = true" title="头像" arrow hover>
+      <t-cell
+        class="my-avatar"
+        @click="avatarSheetVisible = true"
+        title="头像"
+        arrow
+        hover
+      >
         <template #note>
           <t-avatar shape="circle" :image="user.avatarUrl" size="large">
             {{ user.username?.substring(0, 1) || '用户' }}
@@ -168,7 +174,13 @@ const logout = async () => {
         arrow
         hover
       />
-      <t-cell title="性别" @click="genderState.show = true" :note="genderValue" arrow hover />
+      <t-cell
+        title="性别"
+        @click="genderState.show = true"
+        :note="genderValue"
+        arrow
+        hover
+      />
       <t-cell
         title="手机号"
         @click="goEdit('phone', '手机号', user.phone as string)"
@@ -220,9 +232,17 @@ const logout = async () => {
       style="height: 58vh"
     >
       <div class="header">
-        <div class="btn btn--cancel" aria-role="button" @click="tagPickerVisible = false">取消</div>
+        <div
+          class="btn btn--cancel"
+          aria-role="button"
+          @click="tagPickerVisible = false"
+        >
+          取消
+        </div>
         <div class="title">选择标签</div>
-        <div class="btn btn--confirm" aria-role="button" @click="onTagsConfirm">确定</div>
+        <div class="btn btn--confirm" aria-role="button" @click="onTagsConfirm">
+          确定
+        </div>
       </div>
       <t-tree-select
         v-model="selectedTagList"
@@ -239,7 +259,12 @@ const logout = async () => {
       @selected="onActionSheetSelect"
       @cancel="avatarSheetVisible = false"
     />
-    <t-button class="logout-btn" @click="logout" block size="large" theme="danger"
+    <t-button
+      class="logout-btn"
+      @click="logout"
+      block
+      size="large"
+      theme="danger"
       >退出登录</t-button
     >
   </div>

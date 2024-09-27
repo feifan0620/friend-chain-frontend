@@ -13,7 +13,12 @@ const checkPassword = ref('')
 const userCode = ref('')
 
 const registerAvailable = computed(() => {
-  return userAccount.value && userPassword.value && checkPassword.value && userCode.value
+  return (
+    userAccount.value &&
+    userPassword.value &&
+    checkPassword.value &&
+    userCode.value
+  )
 })
 
 /**
@@ -61,7 +66,12 @@ const register = async () => {
     return
   }
 
-  await userRegister(userAccount.value, userPassword.value, checkPassword.value, userCode.value)
+  await userRegister(
+    userAccount.value,
+    userPassword.value,
+    checkPassword.value,
+    userCode.value
+  )
   // 注册成功后返回登录页
   await router.replace('/login')
   Toast.success('注册成功')
@@ -70,7 +80,12 @@ const register = async () => {
 
 <template>
   <div class="register">
-    <t-navbar title="用户注册" :fixed="false" left-arrow @left-click="router.back()" />
+    <t-navbar
+      title="用户注册"
+      :fixed="false"
+      left-arrow
+      @left-click="router.back()"
+    />
     <div class="register-container">
       <h1 class="welcome-title">欢迎来到友链</h1>
       <div class="sub-title">携手共进，成就彼此</div>
@@ -111,8 +126,15 @@ const register = async () => {
       >
     </div>
     <div class="agreement">
-      <t-radio allowUncheck label="已阅读并同意" :block="false" v-model:checked="isAgree" />
-      <t-link hover size="large" theme="primary" href="#">《友链用户协议》</t-link>
+      <t-radio
+        allowUncheck
+        label="已阅读并同意"
+        :block="false"
+        v-model:checked="isAgree"
+      />
+      <t-link hover size="large" theme="primary" href="#"
+        >《友链用户协议》</t-link
+      >
     </div>
   </div>
 </template>

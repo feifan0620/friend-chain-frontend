@@ -24,11 +24,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <t-navbar class="search-navbar" title="用户匹配" left-arrow @left-click="router.back()" />
+  <t-navbar
+    class="search-navbar"
+    title="用户匹配"
+    left-arrow
+    @left-click="router.back()"
+  />
 
   <div class="user-list-container">
     <t-list class="user-list" v-if="userList.length > 0">
-      <UserItem class="user-list-item" v-for="user in userList" :key="user.id" :user="user" />
+      <UserItem
+        class="user-list-item"
+        v-for="user in userList"
+        :key="user.id"
+        :user="user"
+      />
     </t-list>
 
     <t-empty

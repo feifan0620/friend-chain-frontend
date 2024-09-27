@@ -16,7 +16,10 @@ const onFail = ({ file, e }: { file: any; e: ProgressEvent }): any => {
 const onProgress = ({ file, percent, type, e }: any) => {
   console.log('---onProgress:', file, percent, type, e)
 }
-const onChangeUpload = (files: Array<any>, { e, response, trigger, index, file }: any) => {
+const onChangeUpload = (
+  files: Array<any>,
+  { e, response, trigger, index, file }: any
+) => {
   console.log('====onChange', files, e, response, trigger, index, file)
 }
 const onPreview = ({ file, e }: { file: any; e: MouseEvent }) => {
@@ -31,14 +34,8 @@ const onRemove = ({ index, file, e }: any) => {
 const onSelectChange = (files: Array<any>) => {
   console.log('====onSelectChange', files)
 }
-const action = 'https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo'
-const files = ref([
-  {
-    url: 'https://tdesign.gtimg.com/mobile/demos/example4.png',
-    name: 'uploaded1.png',
-    type: 'image'
-  }
-])
+const action =
+  'https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo'
 
 // 表单数据
 // @ts-ignore
@@ -151,7 +148,11 @@ onMounted(() => {
         </t-upload>
       </t-form-item>
       <t-form-item label="队伍名称" name="name">
-        <t-input v-model="formData.name" borderless placeholder="请输入队伍名称"></t-input>
+        <t-input
+          v-model="formData.name"
+          borderless
+          placeholder="请输入队伍名称"
+        ></t-input>
       </t-form-item>
       <t-form-item label="队伍描述" name="description">
         <t-textarea
@@ -162,7 +163,12 @@ onMounted(() => {
           placeholder="请输入队伍描述"
         ></t-textarea>
       </t-form-item>
-      <t-form-item arrow label="过期时间" name="expireTime" content-align="right">
+      <t-form-item
+        arrow
+        label="过期时间"
+        name="expireTime"
+        content-align="right"
+      >
         <t-input
           v-model="formData.expireTime"
           borderless
@@ -195,13 +201,22 @@ onMounted(() => {
         />
       </t-form-item>
       <t-form-item label="队伍状态" name="status">
-        <t-radio-group v-model="formData.status" class="box" borderless @change="groupChangeFn">
+        <t-radio-group
+          v-model="formData.status"
+          class="box"
+          borderless
+          @change="groupChangeFn"
+        >
           <t-radio :block="false" name="radio" value="0" label="公开" />
           <t-radio :block="false" name="radio" value="1" label="私有" />
           <t-radio :block="false" name="radio" value="2" label="加密" />
         </t-radio-group>
       </t-form-item>
-      <t-form-item label="密码" name="password" v-show="(formData.status as any) === '2'">
+      <t-form-item
+        label="密码"
+        name="password"
+        v-show="(formData.status as any) === '2'"
+      >
         <t-input
           v-model="formData.password"
           borderless
@@ -216,7 +231,9 @@ onMounted(() => {
       </t-form-item>
       <div class="button-group">
         <t-button theme="primary" type="submit" size="large">创建</t-button>
-        <t-button theme="default" variant="base" type="reset" size="large">重置</t-button>
+        <t-button theme="default" variant="base" type="reset" size="large"
+          >重置</t-button
+        >
       </div>
     </t-form>
   </div>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
 const router = useRouter()
 const route = useRoute()
 
@@ -88,8 +89,17 @@ watch(
     </Suspense>
 
     <!-- 底部标签栏 -->
-    <t-tab-bar theme="tag" :split="false" @change="changeTab" v-model:value="activeTab">
-      <t-tab-bar-item v-for="item in list" :key="item.value" :value="item.value">
+    <t-tab-bar
+      theme="tag"
+      :split="false"
+      @change="changeTab"
+      v-model:value="activeTab"
+    >
+      <t-tab-bar-item
+        v-for="item in list"
+        :key="item.value"
+        :value="item.value"
+      >
         {{ item.label }}
         <template #icon>
           <t-icon :name="item.icon" />

@@ -30,13 +30,21 @@ const onSave = async () => {
   }
   switch (editKey) {
     case 'phone':
-      if (!currentValue.value.match(/^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/)) {
+      if (
+        !currentValue.value.match(
+          /^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/
+        )
+      ) {
         Toast('请输入正确的手机号')
         return
       }
       break
     case 'email':
-      if (!currentValue.value.match(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/)) {
+      if (
+        !currentValue.value.match(
+          /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+        )
+      ) {
         Toast('请输入正确的邮箱')
         return
       }
@@ -74,7 +82,12 @@ const onSave = async () => {
   >
     <!-- 保存按钮 -->
     <template #right>
-      <t-button class="save" size="small" @click="onSave" :disabled="saveDisabled" theme="primary"
+      <t-button
+        class="save"
+        size="small"
+        @click="onSave"
+        :disabled="saveDisabled"
+        theme="primary"
         >保存</t-button
       >
     </template>

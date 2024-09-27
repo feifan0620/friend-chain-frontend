@@ -25,7 +25,9 @@ const onSearchTags = () => {
     // 复制每个父标签的子标签列表
     const tempChildren = [...parentTag.children]
     // 过滤子标签列表，只保留标签值中包含搜索文本的子标签
-    tempParentTag.children = tempChildren.filter((child) => child.value.includes(searchText.value))
+    tempParentTag.children = tempChildren.filter((child) =>
+      child.value.includes(searchText.value)
+    )
     // 返回包含过滤后子标签的父标签拷贝
     return tempParentTag
   })
@@ -43,11 +45,14 @@ const selectedTags = computed(() => {
  * @param index 要移除的标签在数组中的索引
  */
 function onClickClose(index: string | number) {
-  ;(selectedTagList.value[1] as Array<TreeSelectValue>).splice(index as number, 1)
+  ;(selectedTagList.value[1] as Array<TreeSelectValue>).splice(
+    index as number,
+    1
+  )
 }
 
 // 树形标签选择器选择状态改变监听事件，该值与标签选择器中的值双向绑定
-const onChange: TdTreeSelectProps['onChange'] = (itemValue: TreeSelectValue) => {
+const onChange: TdTreeSelectProps['onChange'] = () => {
   console.log(selectedTags.value)
 }
 
@@ -76,7 +81,11 @@ const onUserSearch = () => {
 
 <template>
   <!-- 顶部导航栏 -->
-  <t-navbar class="search-navbar" :fixed="false" @right-click="router.push('/')">
+  <t-navbar
+    class="search-navbar"
+    :fixed="false"
+    @right-click="router.push('/')"
+  >
     <!-- 左侧搜索框区域 -->
     <template #left>
       <t-search
@@ -100,8 +109,17 @@ const onUserSearch = () => {
     <t-row gutter="10">
       <!-- selectedTagList 的第二项为已选标签列表 -->
       <!-- selectedTagList:[ '年级',[ '大一', '大二' ] ] -->
-      <t-col v-for="(item, index) in selectedTagList[1]" :key="item" class="tag">
-        <t-tag size="large" closable variant="light" @close="onClickClose(index)">
+      <t-col
+        v-for="(item, index) in selectedTagList[1]"
+        :key="item"
+        class="tag"
+      >
+        <t-tag
+          size="large"
+          closable
+          variant="light"
+          @close="onClickClose(index)"
+        >
           {{ item }}
         </t-tag>
       </t-col>
