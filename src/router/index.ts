@@ -9,6 +9,7 @@ import SearchResult from '@/views/SearchResultView.vue'
 import UserLoginView from '@/views/UserLoginView.vue'
 import UserRegisterView from '@/views/UserRegisterView.vue'
 import TeamAddView from '@/views/TeamAddView.vue'
+import UserChat from '@/views/UserChat.vue'
 import { Toast } from 'tdesign-mobile-vue'
 import { useUserStore } from '@/stores/user'
 
@@ -28,6 +29,7 @@ const router = createRouter({
     { path: '/user/search', component: SearchView },
     { path: '/user/result', component: SearchResult },
     { path: '/user/edit', component: EditView },
+    { path: '/user/chat', component: UserChat },
     { path: '/team/add', component: TeamAddView },
     { path: '/login', component: UserLoginView },
     { path: '/register', component: UserRegisterView }

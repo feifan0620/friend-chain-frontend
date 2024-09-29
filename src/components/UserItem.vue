@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { User } from '@/models/user'
-import { Dialog } from 'tdesign-mobile-vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+const router = useRouter()
+const userStore = useUserStore()
 
 const props = defineProps({
   user: {
@@ -10,10 +13,12 @@ const props = defineProps({
 })
 
 const contactMe = () => {
-  Dialog.confirm({
-    title: '提示',
-    content: '该功能暂未实现',
-    confirmBtn: '确定'
+  router.push({
+    path: '/user/chat',
+    query: {
+      avatar: props.user.avatarUrl,
+      name: props.user.username
+    }
   })
 }
 </script>
@@ -55,6 +60,7 @@ const contactMe = () => {
       </div>
     </div>
     <t-button
+      v-if="props.user.username !== userStore.userInfo?.username"
       size="small"
       theme="light"
       class="contact-me-btn"
