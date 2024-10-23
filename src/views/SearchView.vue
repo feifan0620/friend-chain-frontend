@@ -3,6 +3,7 @@ import { computed, type Ref, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { TdTreeSelectProps, TreeSelectValue } from 'tdesign-mobile-vue'
 import { TAGS_LISTS } from '@/constans'
+import { getCurrentUser } from '@/api/user'
 const router = useRouter()
 
 // 原始标签列表,用于获取标签选择器的初始值及搜索后的标签选择器选项
@@ -69,13 +70,25 @@ watch(
 )
 
 const onUserSearch = () => {
-  // 跳转到用户列表页面，并携带已选标签列表
-  router.push({
-    path: '/user/result',
-    query: {
-      tags: selectedTags.value as string[]
-    }
-  })
+  getCurrentUser()
+    .then(() => {
+      // 跳转到用户列表页面，并携带已选标签列表
+      router.push({
+        path: '/user/result',
+        query: {
+          tags: selectedTags.value as string[]
+        }
+      })
+    })
+    .catch(() => {
+      router.replace({
+        path: '/login',
+        query: {
+          redirectUrl:
+            router.currentRoute.value.fullPath + '?tags=' + selectedTags.value
+        }
+      })
+    })
 }
 </script>
 

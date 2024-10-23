@@ -2,6 +2,7 @@
 import type { User } from '@/models/user'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { getCurrentUser } from '@/api/user'
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -13,13 +14,24 @@ const props = defineProps({
 })
 
 const contactMe = () => {
-  router.push({
-    path: '/user/chat',
-    query: {
-      avatar: props.user.avatarUrl,
-      name: props.user.username
-    }
-  })
+  getCurrentUser()
+    .then(() => {
+      router.push({
+        path: '/user/chat',
+        query: {
+          avatar: props.user.avatarUrl,
+          name: props.user.username
+        }
+      })
+    })
+    .catch(() => {
+      router.replace({
+        path: '/login',
+        query: {
+          redirectUrl: router.currentRoute.value.fullPath
+        }
+      })
+    })
 }
 </script>
 

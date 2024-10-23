@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import UserItem from '@/components/UserItem.vue'
 import { h, onMounted, type Ref, ref } from 'vue'
-import { getMatchUser, recommendUsers } from '@/api/user'
+import { getCurrentUser, getMatchUser, recommendUsers } from '@/api/user'
 import type { User } from '@/models/user'
 import { InfoCircleFilledIcon } from 'tdesign-icons-vue-next'
 const userIcon = () => h(InfoCircleFilledIcon)
 import { useUserStore } from '@/stores/user'
+import { useRoute, useRouter } from 'vue-router'
+const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
 
 // 最大数据长度
@@ -26,23 +29,28 @@ const loading = ref('')
  * 如果用户信息存在（已登录），则请求推荐用户数据，并将结果添加到数据对象的推荐用户列表中
  */
 const loadData = async (data: any) => {
-  // 检查用户信息是否存在，存在则继续加载推荐用户
-  if (userStore.userInfo) {
-    // 调用推荐用户API，获取推荐用户数据
-    const res = (await recommendUsers(ONCE_LOAD_NUM, pageNum)) as any
-    // 提取用户列表数据
-    const userList = res.data.records
-    // 处理每个用户的标签信息，将其从字符串解析为对象
-    userList.map((item: User) => {
-      if (item.tags) {
-        return (item.tags = JSON.parse(item.tags as any))
-      }
-    })
-    // 将处理后的用户列表存储到用户 store 的推荐用户列表中
-    userStore.setRecommendUsers(userList)
+  // @ts-ignore
+  if (JSON.stringify(userStore.recommendUsers) !== []) {
+    // @ts-ignore
+    data.value.push(...userStore.recommendUsers)
+    return
   }
+  // 调用推荐用户API，获取推荐用户数据
+  const res = await recommendUsers(ONCE_LOAD_NUM, pageNum)
+  // 提取用户列表数据
+  const userList = res.data.records
+
+  // 处理每个用户的标签信息，将其从字符串解析为对象
+  userList.forEach((item: User) => {
+    if (item.tags) {
+      // @ts-ignore
+      item.tags = JSON.parse(item.tags)
+    }
+  })
+  // 将处理后的用户列表存储到用户 store 的推荐用户列表中
+  userStore.setRecommendUsers(userList)
   // 将用户 store (缓存)中的推荐用户列表添加到数据对象中
-  data.value.push(...userStore.recommendUsers)
+  data.value.push(...userList)
   // 递增页码，用于下一次加载更多数据
   pageNum++
 }
@@ -80,7 +88,7 @@ const onScroll = (scrollBottom: number) => {
 }
 
 // 页面挂在完成时加载推荐用户列表
-onMounted(async () => {
+onMounted(() => {
   onLoadPull()
 })
 

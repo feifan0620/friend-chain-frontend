@@ -1,11 +1,13 @@
 import axios from 'axios'
 import { Toast } from 'tdesign-mobile-vue'
-import { useUserStore } from '@/stores/user'
+import { useRoute, useRouter } from 'vue-router'
+const route = useRoute()
+const router = useRouter()
 
 // 新建自定义 axios 实例
 const instance = axios.create({
   baseURL: 'http://localhost:8080/api',
-  timeout: 5000
+  timeout: 10000
 })
 
 // 携带请求凭证(cookie)
@@ -35,22 +37,19 @@ instance.interceptors.request.use(
 // 添加响应拦截器
 instance.interceptors.response.use(
   async function (response) {
-    // 2xx 范围内的状态码都会触发该函数。
-    // 对响应数据做点什么
-    // axios 会对响应数据多封装一层 data
     const res = response.data
     if (res.code !== 200) {
-      if (res.code === 40100 && res.code === 40101) {
-        const userStore = useUserStore()
-        userStore.clearUserInfo()
-      }
-      if (res.description) {
-        Toast.error(res.description)
-        return Promise.reject(res.description)
-      } else {
-        Toast.error(res.message)
-        return Promise.reject(res.message)
-      }
+      Toast.error(res.message)
+      return Promise.reject(
+        '\n错误码：' +
+          res.code +
+          '\n' +
+          '错误信息：' +
+          res.message +
+          '\n' +
+          '描述：' +
+          res.data
+      )
     } else {
       Toast.clear()
     }

@@ -27,10 +27,11 @@ const isShowDialog = ref(false)
 
 const password = ref('')
 
-const onConfirm = async () => {
+const onConfirm = () => {
   if (props.teamInfo.status === 0) {
-    await joinTeam(props.teamInfo.id)
-    Toast.success('加入成功')
+    joinTeam(props.teamInfo.id).then(() => {
+      Toast.success('加入成功')
+    })
   } else {
     joinTeam(props.teamInfo.id, password.value)
       .then(() => {
